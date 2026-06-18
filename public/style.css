@@ -204,6 +204,22 @@ canvas {
 .legend { color: var(--muted); font-size: .78rem; margin: 10px 0 0; line-height: 1.4; }
 .legend code { background: #eef2f7; padding: 1px 5px; border-radius: 4px; }
 
+.leaderboard-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.btn-danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
 .page-footer {
   margin-top: 28px;
   color: #fff;
@@ -219,6 +235,91 @@ canvas {
   .player { align-self: flex-end; }
   .leaderboard { width: 360px; }
 }
+
+/* ===================== ÉCRAN MENU (landing) ===================== */
+.menu-screen.hidden,
+.game-screen.hidden { display: none; }
+
+.menu-screen {
+  width: 100%;
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.menu-hero { text-align: center; }
+.hero-bird {
+  font-size: 4.6rem;
+  line-height: 1;
+  animation: float 2.4s ease-in-out infinite;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .2));
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50%      { transform: translateY(-14px) rotate(4deg); }
+}
+.menu-title {
+  margin: 8px 0 0;
+  font-size: 3rem;
+  letter-spacing: -1px;
+  color: #fff;
+  text-shadow: 0 3px 0 var(--accent-d), 0 6px 16px rgba(0, 0, 0, .25);
+}
+.menu-title span { color: var(--accent); }
+.menu-tagline { margin: 6px 0 0; color: #fff; font-weight: 600; opacity: .95; }
+
+/* Le widget pseudo, centré dans le menu */
+.menu-player { align-items: center; min-width: 220px; }
+
+/* Gros bouton JOUER, avec ombre "3D" */
+.btn-play {
+  font-size: 1.4rem;
+  padding: 14px 52px;
+  border-radius: 14px;
+  letter-spacing: .5px;
+  box-shadow: 0 6px 0 var(--accent-d), 0 12px 22px rgba(0, 0, 0, .22);
+}
+.btn-play:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 var(--accent-d), 0 6px 12px rgba(0, 0, 0, .22);
+}
+
+.menu-cards {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+.menu-cards .leaderboard,
+.menu-cards .howto {
+  flex: 1 1 280px;
+  width: auto;
+  max-width: 340px;
+}
+
+.howto {
+  background: var(--card);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 18px 20px;
+}
+.howto h2 { margin: 0 0 12px; font-size: 1.15rem; }
+.howto ul { margin: 0; padding-left: 18px; color: var(--ink); }
+.howto li { margin: 8px 0; font-size: .92rem; line-height: 1.45; }
+
+/* ===================== ÉCRAN JEU ===================== */
+.game-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+.back-menu { align-self: center; }
+.overlay-actions { display: flex; gap: 10px; }
 
 /* --- Bouton Invincibilité --- */
 .invinc-bar {
@@ -319,5 +420,4 @@ canvas {
   50%       { transform: translateY(calc(-50% - 10px)); }
 }
 
-/* Masquer Shrek sur petits écrans (pas assez de place) */
 @media (max-width: 1100px) { .shrek { display: none; } }
