@@ -156,9 +156,9 @@ flappy-tban/
 
 ## 🤝 Contributeurs
 
-| Identité étudiant | Compte / auteur des commits        |
-|-------------------|------------------------------------|
-| Lenny TRIDAT      | **NYL3E** (propriétaire du dépôt)  |
-| Alexis BRUN       | commits au nom « Alexis BRUN »     |
-| Raphaël ASSY      | commits au nom « Raphael ASSY »    |
-| Seno NGUYEN       | commits au nom « Seno NGUYEN »     |
+| Identité étudiant | Compte GitHub                          |
+|-------------------|----------------------------------------|
+| Lenny TRIDAT      | **NYL3E** (propriétaire) & **nylegoat** |
+| Alexis BRUN       | **Vexta-AI**                           |
+| Raphaël ASSY      | **tygh7**                              |
+| Seno NGUYEN       | **nseno**                              |
