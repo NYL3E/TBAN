@@ -52,7 +52,10 @@
       <ol id="scores" class="scores">
         <li class="empty">Chargement…</li>
       </ol>
-      <button id="refresh" class="btn btn-ghost btn-sm">↻ Rafraîchir</button>
+      <div class="leaderboard-actions">
+        <button id="refresh" class="btn btn-ghost btn-sm">↻ Rafraîchir</button>
+        <button id="reset-leaderboard" class="btn btn-ghost btn-sm btn-danger" title="Réinitialiser le classement" aria-label="Réinitialiser le classement">🗑️ Vider</button>
+      </div>
       <p class="legend">Ton score est sauvegardé automatiquement dans PostgreSQL à chaque partie, sous ton pseudo.</p>
     </aside>
   </main>
