@@ -394,65 +394,11 @@
       ctx.shadowBlur = 0;
     }
 
-    // --- Tête de Shrek ---
-    const s = BIRD_R / 15;
-
-    // Oreilles (moignons caractéristiques de Shrek)
-    ctx.fillStyle = '#6aaa2a';
-    ellipse(-11 * s, -13 * s, 5 * s, 7 * s);
-    ellipse( 11 * s, -13 * s, 5 * s, 7 * s);
-
-    // Tête principale (ovale vert)
-    ctx.fillStyle = '#7abf35';
-    ctx.beginPath();
-    ctx.ellipse(0, 0, 14 * s, 16 * s, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Ombre sous le visage
-    ctx.fillStyle = '#6aaa2a';
-    ctx.beginPath();
-    ctx.ellipse(0, 6 * s, 13 * s, 8 * s, 0, 0, Math.PI);
-    ctx.fill();
-
-    // Sourcils
-    ctx.strokeStyle = '#3d6b10';
-    ctx.lineWidth = 2 * s;
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    ctx.moveTo(-9 * s, -7 * s); ctx.lineTo(-4 * s, -9 * s);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo( 9 * s, -7 * s); ctx.lineTo( 4 * s, -9 * s);
-    ctx.stroke();
-
-    // Yeux blancs
-    ctx.fillStyle = '#fff';
-    ellipse(-6 * s, -4 * s, 4.5 * s, 4 * s);
-    ellipse( 6 * s, -4 * s, 4.5 * s, 4 * s);
-
-    // Pupilles
-    ctx.fillStyle = '#1a3a00';
-    circle(-6 * s, -3 * s, 2.2 * s);
-    circle( 6 * s, -3 * s, 2.2 * s);
-
-    // Brillance des yeux
-    ctx.fillStyle = '#fff';
-    circle(-5 * s, -4.5 * s, 0.9 * s);
-    circle( 7 * s, -4.5 * s, 0.9 * s);
-
-    // Nez bulbeux
-    ctx.fillStyle = '#5f9e20';
-    ellipse(0, 3 * s, 5 * s, 4 * s);
-    ctx.fillStyle = '#4a7d18';
-    circle(-2 * s, 4 * s, 1.5 * s);
-    circle( 2 * s, 4 * s, 1.5 * s);
-
-    // Bouche
-    ctx.strokeStyle = '#3d6b10';
-    ctx.lineWidth = 1.8 * s;
-    ctx.beginPath();
-    ctx.arc(0, 7 * s, 6 * s, 0.15, Math.PI - 0.15);
-    ctx.stroke();
+    // --- Emoji 💩 ---
+    ctx.font = (BIRD_R * 2.2) + 'px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('\uD83D\uDCA9', 0, 0);
 
     ctx.restore();
   }
