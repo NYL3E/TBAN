@@ -6,10 +6,15 @@ services:
     image: flappy-tban
     restart: unless-stopped
     environment:
+      # Variable magique Coolify : expose le service "app" sur le port 3000
+      # au domaine public (génère les bons labels Traefik). Adapter le domaine.
+      SERVICE_FQDN_APP_3000: "https://tban.planbadge.fr"
       PORT: 3000
       DATABASE_URL: postgres://${POSTGRES_USER:-flappy}:${POSTGRES_PASSWORD:-flappy}@db:5432/${POSTGRES_DB:-flappy}
-    ports:
-      - "3000:3000"
+    # On expose le port au réseau interne (Traefik route le domaine vers ce
+    # port). Pas de port hôte publié → aucun conflit sur l'instance partagée.
+    expose:
+      - "3000"
     depends_on:
       db:
         condition: service_healthy
