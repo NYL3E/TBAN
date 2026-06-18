@@ -66,8 +66,8 @@
   <div class="meta">
     <div><b>Application :</b> Flappy TBAN (jeu + leaderboard)</div>
     <div><b>Date :</b> 18 juin 2026</div>
-    <div><b>Dépôt GitHub (public) :</b> <span class="fill">github.com/…/flappy-tban</span></div>
-    <div><b>URL publique (HTTPS) :</b> <span class="fill">https://lenny.planbadge.fr</span></div>
+    <div><b>Dépôt GitHub (public) :</b> github.com/NYL3E/TBAN</div>
+    <div><b>URL publique (HTTPS) :</b> https://tban.planbadge.fr</div>
   </div>
   <p style="font-size:.82rem;color:var(--muted);margin-top:10px">
     Seuls les étudiants mentionnés ci-dessus et visibles dans les commits du dépôt sont considérés comme contributeurs au projet.
@@ -96,9 +96,11 @@ Coolify → exploitation (monitoring, logs, mises à jour, sauvegardes, support)
   <tr><th>Fonctionnalités principales</th>
       <td>
         <ul>
-          <li>Jeu Flappy Bird complet : gravité, tuyaux, détection de collisions, score en temps réel.</li>
-          <li><b>Enregistrement du score</b> en fin de partie (pseudo + score) via une API REST.</li>
-          <li><b>Leaderboard « Top 10 »</b> alimenté en direct depuis la base PostgreSQL.</li>
+          <li>Jeu Flappy Bird complet : gravité, tuyaux, collisions, score en temps réel.</li>
+          <li><b>Difficulté progressive</b> : la vitesse augmente et l'ouverture se resserre doucement avec le score (effet borné, non punitif).</li>
+          <li><b>Pseudo défini une seule fois</b> (en haut à droite, mémorisé via <code>localStorage</code>) → identité de joueur stable.</li>
+          <li><b>Sauvegarde automatique</b> du score en fin de partie (API REST → PostgreSQL), sans action manuelle.</li>
+          <li><b>Leaderboard « Top 10 »</b> alimenté en direct depuis la base.</li>
           <li>Route de santé <code>/health</code> pour la supervision.</li>
         </ul>
       </td></tr>
@@ -113,7 +115,7 @@ Coolify → exploitation (monitoring, logs, mises à jour, sauvegardes, support)
 <!-- ============================== 2. DÉPÔT GITHUB ============================== -->
 <h2>2. Dépôt GitHub</h2>
 <table>
-  <tr><th style="width:26%">Dépôt</th><td><span class="fill">github.com/…/flappy-tban</span> — <b>public</b>.</td></tr>
+  <tr><th style="width:26%">Dépôt</th><td><b>github.com/NYL3E/TBAN</b> — public.</td></tr>
   <tr><th>Visibilité des contributeurs</th>
       <td>Les commits portent les comptes GitHub des membres. Comme les pseudos ne reprennent pas forcément
       l'identité civile, le tableau de correspondance ci-dessous fait le lien.</td></tr>
@@ -121,10 +123,10 @@ Coolify → exploitation (monitoring, logs, mises à jour, sauvegardes, support)
 <h3>Correspondance pseudo GitHub ↔ étudiant</h3>
 <table>
   <tr><th>Étudiant</th><th>Pseudo GitHub</th><th>Exemples de contributions</th></tr>
-  <tr><td>Lenny TRIDAT</td><td class="fill">à compléter</td><td>Backend Express &amp; API <code>/api/scores</code>, intégration PostgreSQL.</td></tr>
-  <tr><td>Alexis BRUN</td><td class="fill">à compléter</td><td>Moteur du jeu (canvas), physique &amp; collisions.</td></tr>
-  <tr><td>Raphaël ASSY</td><td class="fill">à compléter</td><td>Dockerfile, docker-compose, déploiement Coolify.</td></tr>
-  <tr><td>Seno NGUYEN</td><td class="fill">à compléter</td><td>UI / leaderboard, monitoring Uptime Kuma, rapport.</td></tr>
+  <tr><td>Lenny TRIDAT</td><td><b>NYL3E</b> (propriétaire du dépôt)</td><td>Backend Express &amp; API <code>/api/scores</code>, intégration PostgreSQL.</td></tr>
+  <tr><td>Alexis BRUN</td><td>commits au nom « Alexis BRUN »</td><td>Moteur du jeu (canvas), physique, collisions, difficulté progressive.</td></tr>
+  <tr><td>Raphaël ASSY</td><td>commits au nom « Raphael ASSY »</td><td>Dockerfile, docker-compose, déploiement &amp; routage Coolify.</td></tr>
+  <tr><td>Seno NGUYEN</td><td>commits au nom « Seno NGUYEN »</td><td>UI / leaderboard, pseudo &amp; sauvegarde auto, rapport.</td></tr>
 </table>
 <div class="box"><span class="label">Convention de commits (messages à sens métier)</span>
 <pre>feat(game): boucle de jeu et collisions des tuyaux
@@ -179,16 +181,16 @@ participation des quatre membres.</div>
   <li>Le domaine public est associé au service <b>app</b> (port <b>3000</b>), <b>HTTPS</b> activé (Let's Encrypt).</li>
   <li>Le <b>Healthcheck</b> Coolify pointe sur <code>/health</code> → l'app passe en <code>running:healthy</code>.</li>
 </ol>
-<div class="box"><span class="label">Preuve technique — vérifications</span>
-<pre><span class="c"># L'application répond et sert le jeu</span>
-$ curl -sI https://<span class="fill">lenny.planbadge.fr</span>/        ->  HTTP/2 200
-<span class="c"># La route de santé : 200 quand l'app ET la base sont OK</span>
-$ curl -s  https://<span class="fill">lenny.planbadge.fr</span>/health  ->  {"status":"ok","db":"up", ...}
-<span class="c"># Enregistrement puis lecture d'un score (donnée métier persistée)</span>
-$ curl -s -X POST .../api/scores -d '{"name":"Lenny","score":27}'  ->  201 Created
-$ curl -s https://.../api/scores                                  ->  [{"name":"Lenny","score":27}, ...]</pre>
-<span style="font-size:.8rem;color:var(--muted)">Le serveur web, le routage, le service des fichiers statiques et la validation des scores (HTTP 400 sur score
-invalide) ont été testés localement ; le chemin base de données est validé une fois déployé (Postgres présent).</span></div>
+<div class="box"><span class="label">Preuve technique — vérifications réelles sur l'application en production</span>
+<pre><span class="c"># Réponse HTTPS avec certificat Let's Encrypt valide</span>
+$ curl -sI https://tban.planbadge.fr/        ->  HTTP/2 200   (cert TLS valide)
+<span class="c"># Route de santé : 200 + base de données joignable</span>
+$ curl -s  https://tban.planbadge.fr/health  ->  {"status":"ok","db":"up","uptime":504}
+<span class="c"># Leaderboard : la donnée métier est bien persistée en PostgreSQL</span>
+$ curl -s  https://tban.planbadge.fr/api/scores
+   ->  [{"name":"senio","score":96}, {"name":"ALEX","score":35}, ...]</pre>
+<span style="font-size:.8rem;color:var(--muted)">Vérifié en direct sur l'environnement déployé : HTTPS valide, base connectée, persistance des scores
+confirmée via l'API. La validation d'entrée (HTTP 400 sur score invalide) a aussi été testée.</span></div>
 <h3>Technologies utilisées</h3>
 <p>Node.js 20, Express, <code>pg</code> (client PostgreSQL), PostgreSQL 16, Docker / Docker Compose, Coolify
 (Traefik + Let's Encrypt), Uptime Kuma.</p>
@@ -202,8 +204,8 @@ invalide) ont été testés localement ; le chemin base de données est validé 
       <td><code>depends_on: condition: service_healthy</code> + <code>pg_isready</code> sur le service <code>db</code>.</td></tr>
   <tr><td>Persistance de la donnée entre deux déploiements.</td>
       <td>Volume nommé <code>db_data</code> monté sur <code>/var/lib/postgresql/data</code> (à ne jamais supprimer).</td></tr>
-  <tr><td>Exposer le bon port derrière le proxy Coolify.</td>
-      <td>Service <b>app</b> sur le port interne <b>3000</b>, domaine + HTTPS gérés par Coolify/Traefik.</td></tr>
+  <tr><td><b>Erreur Traefik « 503 no available server »</b> au 1ᵉʳ déploiement : le domaine était routé vers le port 80 par défaut, alors que l'app écoute sur 3000.</td>
+      <td>Dans Coolify, le domaine doit <b>cibler le port interne du conteneur</b> : on l'a saisi sous la forme <code>https://tban.planbadge.fr:3000</code>. Résolution immédiate → app accessible + HTTPS Let's Encrypt émis.</td></tr>
 </table>
 
 <!-- ============================== 5. EXPLOITATION ============================== -->
@@ -341,8 +343,8 @@ pour Flappy TBAN, tous calculables depuis la table <code>scores</code> :</p>
 
 <div class="footer">Rapport — Projet final « Déployer et exploiter une application web » · Application <b>Flappy TBAN</b> ·
 Groupe TBAN (Lenny TRIDAT, Alexis BRUN, Raphaël ASSY, Seno NGUYEN) ·
-Document conçu pour export PDF (Fichier → Imprimer → Enregistrer en PDF). Les zones <span class="fill">surlignées</span>
-sont à compléter avant le rendu (URL réelle, pseudos GitHub, captures d'écran).</div>
+Document conçu pour export PDF (Fichier → Imprimer → Enregistrer en PDF).
+Il reste à <b>insérer les captures d'écran</b> (Coolify <i>healthy</i>, Uptime Kuma au vert, logs, jeu en ligne) aux emplacements prévus.</div>
 
 </div>
 </body>
