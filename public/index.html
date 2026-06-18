@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Flappy TBAN — un Flappy Bird avec leaderboard en ligne. Projet final déploiement (groupe TBAN)." />
+  <title>Flappy TBAN 🐤</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🐤</text></svg>" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Flappy <span>TBAN</span> <span class="bird-emoji">🐤</span></h1>
+    <p class="tagline">Clique, vole, et grimpe dans le classement.</p>
+  </header>
+
+  <main class="layout">
+    <!-- Zone de jeu -->
+    <section class="game-card">
+      <div class="canvas-wrap">
+        <canvas id="game" width="360" height="640" aria-label="Jeu Flappy Bird"></canvas>
+
+        <!-- Panneau Game Over (au-dessus du canvas) -->
+        <div id="gameover" class="overlay hidden">
+          <h2>Game&nbsp;Over</h2>
+          <p class="final">Score : <strong id="final-score">0</strong></p>
+
+          <form id="score-form" autocomplete="off">
+            <label for="player-name" class="sr-only">Ton pseudo</label>
+            <input id="player-name" name="name" maxlength="20" placeholder="Ton pseudo"
+                   inputmode="text" />
+            <button type="submit" id="save-btn" class="btn btn-primary">Enregistrer mon score</button>
+          </form>
+          <p id="save-status" class="save-status"></p>
+
+          <button id="replay" class="btn btn-ghost">Rejouer</button>
+        </div>
+      </div>
+      <p class="hint">Espace / clic / tap pour battre des ailes.</p>
+    </section>
+
+    <!-- Leaderboard -->
+    <aside class="leaderboard">
+      <h2>🏆 Meilleurs scores</h2>
+      <ol id="scores" class="scores">
+        <li class="empty">Chargement…</li>
+      </ol>
+      <button id="refresh" class="btn btn-ghost btn-sm">↻ Rafraîchir</button>
+      <p class="legend">Les scores sont stockés dans PostgreSQL via l'API <code>/api/scores</code>.</p>
+    </aside>
+  </main>
+
+  <footer class="page-footer">
+    Flappy TBAN — Lenny TRIDAT · Alexis BRUN · Raphaël ASSY · Seno NGUYEN ·
+    Projet final « Déployer et exploiter une application web ».
+  </footer>
+
+  <script src="game.js"></script>
+</body>
+</html>
