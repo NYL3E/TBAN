@@ -9,15 +9,17 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🐤</text></svg>" />
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <h1>Flappy <span>TBAN</span> <span class="bird-emoji">🐤</span></h1>
-      <p class="tagline">Clique, vole, grimpe dans le classement.</p>
+  <!-- ===================== ÉCRAN MENU (landing) ===================== -->
+  <section id="menu" class="menu-screen">
+    <div class="menu-hero">
+      <div class="hero-bird" aria-hidden="true">🐤</div>
+      <h1 class="menu-title">Flappy <span>TBAN</span></h1>
+      <p class="menu-tagline">Clique, vole, grimpe dans le classement.</p>
     </div>
 
-    <!-- Identité du joueur : on la définit UNE fois, elle est mémorisée -->
-    <div class="player" id="player-widget">
-      <span class="player-label">🎮 Joueur</span>
+    <!-- Identité du joueur : définie UNE fois, mémorisée -->
+    <div class="player menu-player" id="player-widget">
+      <span class="player-label">🎮 Ton pseudo</span>
       <div class="player-set hidden" id="player-set">
         <span class="player-name" id="player-name-display">—</span>
         <button id="player-edit" class="mini-btn" title="Modifier le pseudo" aria-label="Modifier le pseudo">✏️</button>
@@ -27,10 +29,41 @@
         <button type="submit" class="mini-btn" title="Valider" aria-label="Valider">✓</button>
       </form>
     </div>
-  </header>
 
-  <main class="layout">
-    <!-- Zone de jeu -->
+    <button id="play-btn" class="btn btn-primary btn-play">▶ JOUER</button>
+
+    <div class="menu-cards">
+      <!-- Leaderboard -->
+      <aside class="leaderboard">
+        <h2>🏆 Meilleurs scores</h2>
+        <ol id="scores" class="scores">
+          <li class="empty">Chargement…</li>
+        </ol>
+        <button id="refresh" class="btn btn-ghost btn-sm">↻ Rafraîchir</button>
+      </aside>
+
+      <!-- Comment jouer -->
+      <aside class="howto">
+        <h2>🎮 Comment jouer</h2>
+        <ul>
+          <li><strong>Espace</strong>, <strong>clic</strong> ou <strong>tap</strong> pour battre des ailes.</li>
+          <li>Passe entre les tuyaux sans les toucher.</li>
+          <li>La difficulté augmente doucement avec ton score.</li>
+          <li>Chaque partie est enregistrée sous ton pseudo.</li>
+        </ul>
+      </aside>
+    </div>
+
+    <footer class="page-footer">
+      Flappy TBAN — Lenny TRIDAT · Alexis BRUN · Raphaël ASSY · Seno NGUYEN ·
+      Projet final « Déployer et exploiter une application web ».
+    </footer>
+  </section>
+
+  <!-- ===================== ÉCRAN JEU ===================== -->
+  <main id="game-screen" class="game-screen hidden">
+    <button id="back-menu" class="btn btn-ghost btn-sm back-menu">← Menu</button>
+
     <section class="game-card">
       <div class="canvas-wrap">
         <canvas id="game" width="360" height="640" aria-label="Jeu Flappy Bird"></canvas>
@@ -40,27 +73,15 @@
           <h2>Game&nbsp;Over</h2>
           <p class="final">Score : <strong id="final-score">0</strong></p>
           <p id="save-status" class="save-status">Enregistrement…</p>
-          <button id="replay" class="btn btn-primary">Rejouer</button>
+          <div class="overlay-actions">
+            <button id="replay" class="btn btn-primary">Rejouer</button>
+            <button id="to-menu" class="btn btn-ghost">Menu</button>
+          </div>
         </div>
       </div>
       <p class="hint">Espace / clic / tap pour battre des ailes.</p>
     </section>
-
-    <!-- Leaderboard -->
-    <aside class="leaderboard">
-      <h2>🏆 Meilleurs scores</h2>
-      <ol id="scores" class="scores">
-        <li class="empty">Chargement…</li>
-      </ol>
-      <button id="refresh" class="btn btn-ghost btn-sm">↻ Rafraîchir</button>
-      <p class="legend">Ton score est sauvegardé automatiquement dans PostgreSQL à chaque partie, sous ton pseudo.</p>
-    </aside>
   </main>
-
-  <footer class="page-footer">
-    Flappy TBAN — Lenny TRIDAT · Alexis BRUN · Raphaël ASSY · Seno NGUYEN ·
-    Projet final « Déployer et exploiter une application web ».
-  </footer>
 
   <script src="game.js"></script>
 </body>
