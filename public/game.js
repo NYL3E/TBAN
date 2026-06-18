@@ -1,5 +1,7 @@
 /* Flappy TBAN — moteur de jeu (canvas 2D, sans dépendance).
-   États : "ready" (écran d'accueil) → "playing" → "dead" (Game Over). */
+   - Pseudo défini UNE fois (en haut à droite), mémorisé (localStorage).
+   - Difficulté progressive douce avec le score.
+   - Score enregistré AUTOMATIQUEMENT en base à chaque partie. */
 (() => {
   'use strict';
 
@@ -14,60 +16,103 @@
   const GRAVITY = 1500;        // px/s²
   const FLAP_V = -430;         // impulsion vers le haut (px/s)
   const PIPE_W = 64;
-  const PIPE_GAP = 165;        // ouverture entre les tuyaux
   const PIPE_SPACING = 220;    // distance horizontale entre deux tuyaux
-  const PIPE_SPEED = 150;      // px/s vers la gauche
   const BIRD_X = 96;
   const BIRD_R = 15;
 
+  // Difficulté progressive (douce et bornée — "pas abusé") :
+  // la vitesse augmente et l'ouverture se resserre légèrement avec le score.
+  const BASE_SPEED = 150, MAX_SPEED = 270;
+  const BASE_GAP = 175, MIN_GAP = 120;
+  const speedFor = (s) => Math.min(MAX_SPEED, BASE_SPEED + s * 3);
+  const gapFor = (s) => Math.max(MIN_GAP, BASE_GAP - s * 1.6);
+
   // --- État ------------------------------------------------------------------
-  let state = 'ready';
+  let state = 'ready';        // "ready" | "playing" | "dead"
   let bird = { y: H / 2, v: 0 };
   let pipes = [];
   let score = 0;
-  let spawnDx = 0;            // distance parcourue depuis le dernier tuyau
+  let spawnDx = 0;
   let groundScroll = 0;
   let lastTime = 0;
 
+  // --- Pseudo (identité du joueur) ------------------------------------------
+  const STORE_KEY = 'flappy_tban_pseudo';
+  const setEl = document.getElementById('player-set');
+  const nameDisplay = document.getElementById('player-name-display');
+  const editBtn = document.getElementById('player-edit');
+  const formEl = document.getElementById('player-form');
+  const inputEl = document.getElementById('player-input');
+
+  let pseudo = (localStorage.getItem(STORE_KEY) || '').trim();
+
+  function showLocked() {
+    nameDisplay.textContent = pseudo;
+    setEl.classList.remove('hidden');
+    formEl.classList.add('hidden');
+  }
+  function showEditing() {
+    inputEl.value = pseudo;
+    setEl.classList.add('hidden');
+    formEl.classList.remove('hidden');
+    inputEl.focus();
+    inputEl.select();
+  }
+  if (pseudo) showLocked(); else showEditing();
+
+  editBtn.addEventListener('click', showEditing);
+  formEl.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const val = inputEl.value.trim().slice(0, 20);
+    if (!val) { inputEl.focus(); return; }   // pseudo obligatoire
+    pseudo = val;
+    localStorage.setItem(STORE_KEY, pseudo);
+    showLocked();
+  });
+
+  // --- Cycle de partie -------------------------------------------------------
   function reset() {
     bird = { y: H / 2, v: 0 };
     pipes = [];
     score = 0;
-    spawnDx = PIPE_SPACING;  // un tuyau apparaît rapidement
+    spawnDx = PIPE_SPACING;
     state = 'playing';
-    hideGameOver();
+    gameoverEl.classList.add('hidden');
   }
 
   function spawnPipe() {
+    const gap = gapFor(score);
     const margin = 60;
-    const gapTop =
-      margin + Math.random() * (FLOOR_Y - PIPE_GAP - margin * 2);
-    pipes.push({ x: W + PIPE_W, gapTop, passed: false });
+    const gapTop = margin + Math.random() * (FLOOR_Y - gap - margin * 2);
+    pipes.push({ x: W + PIPE_W, gapTop, gap, passed: false });
   }
 
   function flap() {
-    if (state === 'ready') { reset(); return; }
-    if (state === 'playing') { bird.v = FLAP_V; return; }
-    // En "dead", on ne relance pas au clic (on passe par le bouton Rejouer
-    // pour ne pas rejouer par accident en validant le pseudo).
+    if (state === 'ready') {
+      if (!pseudo) { showEditing(); return; }   // on exige le pseudo d'abord
+      reset();
+      return;
+    }
+    if (state === 'playing') bird.v = FLAP_V;
+    // En "dead" : on ne relance qu'avec le bouton Rejouer.
   }
 
-  // --- Boucle de jeu ---------------------------------------------------------
+  // --- Mise à jour -----------------------------------------------------------
   function update(dt) {
     if (state !== 'playing') return;
+    const speed = speedFor(score);
 
     bird.v += GRAVITY * dt;
     bird.y += bird.v * dt;
 
-    // Génération des tuyaux à intervalle de distance régulier
-    spawnDx += PIPE_SPEED * dt;
+    spawnDx += speed * dt;
     if (spawnDx >= PIPE_SPACING) {
       spawnDx -= PIPE_SPACING;
       spawnPipe();
     }
 
     for (const p of pipes) {
-      p.x -= PIPE_SPEED * dt;
+      p.x -= speed * dt;
       if (!p.passed && p.x + PIPE_W < BIRD_X - BIRD_R) {
         p.passed = true;
         score++;
@@ -75,21 +120,14 @@
     }
     pipes = pipes.filter((p) => p.x + PIPE_W > -10);
 
-    // Collisions sol / plafond
-    if (bird.y + BIRD_R >= FLOOR_Y || bird.y - BIRD_R <= 0) {
-      return die();
-    }
-    // Collisions avec les tuyaux
-    for (const p of pipes) {
-      if (hitsPipe(p)) return die();
-    }
+    if (bird.y + BIRD_R >= FLOOR_Y || bird.y - BIRD_R <= 0) return die();
+    for (const p of pipes) if (hitsPipe(p)) return die();
   }
 
-  // Collision cercle (oiseau) / rectangles (tuyaux haut et bas)
   function hitsPipe(p) {
     const inX = BIRD_X + BIRD_R > p.x && BIRD_X - BIRD_R < p.x + PIPE_W;
     if (!inX) return false;
-    const gapBottom = p.gapTop + PIPE_GAP;
+    const gapBottom = p.gapTop + p.gap;
     return bird.y - BIRD_R < p.gapTop || bird.y + BIRD_R > gapBottom;
   }
 
@@ -97,28 +135,18 @@
     if (state !== 'playing') return;
     state = 'dead';
     showGameOver(score);
+    saveScore(score);   // sauvegarde AUTOMATIQUE et obligatoire
   }
 
   // --- Rendu -----------------------------------------------------------------
   function draw() {
-    // Ciel
     ctx.fillStyle = '#4ec0ca';
     ctx.fillRect(0, 0, W, H);
     drawClouds();
-
-    // Tuyaux
     for (const p of pipes) drawPipe(p);
-
-    // Sol
     drawGround();
-
-    // Oiseau
     drawBird();
-
-    // Score en cours de partie
-    if (state === 'playing' || state === 'dead') {
-      drawScore(score);
-    }
+    if (state === 'playing' || state === 'dead') drawScore(score);
     if (state === 'ready') drawReady();
   }
 
@@ -135,17 +163,14 @@
   }
 
   function drawPipe(p) {
-    const gapBottom = p.gapTop + PIPE_GAP;
+    const gapBottom = p.gapTop + p.gap;
     const lip = 18;
-    // Corps
     ctx.fillStyle = '#5bbf2e';
     ctx.fillRect(p.x, 0, PIPE_W, p.gapTop);
     ctx.fillRect(p.x, gapBottom, PIPE_W, FLOOR_Y - gapBottom);
-    // Rebords (lèvres)
     ctx.fillStyle = '#4a9e25';
     ctx.fillRect(p.x - 4, p.gapTop - lip, PIPE_W + 8, lip);
     ctx.fillRect(p.x - 4, gapBottom, PIPE_W + 8, lip);
-    // Contour clair
     ctx.fillStyle = 'rgba(255,255,255,.25)';
     ctx.fillRect(p.x + 6, 0, 6, p.gapTop);
     ctx.fillRect(p.x + 6, gapBottom, 6, FLOOR_Y - gapBottom);
@@ -156,13 +181,10 @@
     ctx.fillRect(0, FLOOR_Y, W, GROUND_H);
     ctx.fillStyle = '#caa45a';
     ctx.fillRect(0, FLOOR_Y, W, 8);
-    // Hachures qui défilent
     ctx.fillStyle = '#c2b765';
     const step = 24;
     const off = groundScroll % step;
-    for (let x = -off; x < W; x += step) {
-      ctx.fillRect(x, FLOOR_Y + 12, 12, 10);
-    }
+    for (let x = -off; x < W; x += step) ctx.fillRect(x, FLOOR_Y + 12, 12, 10);
   }
 
   function drawBird() {
@@ -170,21 +192,16 @@
     ctx.save();
     ctx.translate(BIRD_X, bird.y);
     ctx.rotate(angle);
-
-    // Corps
     ctx.fillStyle = '#f7c948';
     circle(0, 0, BIRD_R);
     ctx.fillStyle = '#f0a500';
-    circle(0, BIRD_R - 6, BIRD_R - 4); // ventre légèrement plus foncé
-    // Aile
+    circle(0, BIRD_R - 6, BIRD_R - 4);
     ctx.fillStyle = '#fff3bf';
     ellipse(-3, 2, 8, 5);
-    // Œil
     ctx.fillStyle = '#fff';
     circle(6, -5, 5);
     ctx.fillStyle = '#1f2933';
     circle(8, -5, 2.4);
-    // Bec
     ctx.fillStyle = '#e8590c';
     ctx.beginPath();
     ctx.moveTo(BIRD_R - 2, -2);
@@ -192,7 +209,6 @@
     ctx.lineTo(BIRD_R - 2, 4);
     ctx.closePath();
     ctx.fill();
-
     ctx.restore();
   }
 
@@ -211,43 +227,37 @@
     ctx.fillRect(0, 0, W, H);
     ctx.textAlign = 'center';
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 30px -apple-system, Segoe UI, Roboto, sans-serif';
-    ctx.fillText('Prêt ?', W / 2, H / 2 - 30);
-    ctx.font = '500 18px -apple-system, Segoe UI, Roboto, sans-serif';
-    ctx.fillText('Clique / Espace / tap', W / 2, H / 2 + 6);
-    ctx.fillText('pour commencer', W / 2, H / 2 + 30);
+    if (pseudo) {
+      ctx.font = 'bold 28px -apple-system, Segoe UI, Roboto, sans-serif';
+      ctx.fillText(`Prêt, ${pseudo} ?`, W / 2, H / 2 - 26);
+      ctx.font = '500 18px -apple-system, Segoe UI, Roboto, sans-serif';
+      ctx.fillText('Clique / Espace / tap', W / 2, H / 2 + 6);
+      ctx.fillText('pour commencer', W / 2, H / 2 + 30);
+    } else {
+      ctx.font = 'bold 24px -apple-system, Segoe UI, Roboto, sans-serif';
+      ctx.fillText('Choisis ton pseudo', W / 2, H / 2 - 16);
+      ctx.font = '500 18px -apple-system, Segoe UI, Roboto, sans-serif';
+      ctx.fillText('en haut à droite ✏️', W / 2, H / 2 + 12);
+    }
   }
 
-  // Petites aides de dessin
-  function circle(x, y, r) {
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  function ellipse(x, y, rx, ry) {
-    ctx.beginPath();
-    ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
-    ctx.fill();
-  }
+  function circle(x, y, r) { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); }
+  function ellipse(x, y, rx, ry) { ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); ctx.fill(); }
 
   function loop(ts) {
     if (!lastTime) lastTime = ts;
     let dt = (ts - lastTime) / 1000;
     lastTime = ts;
-    if (dt > 0.05) dt = 0.05; // borne anti-saut (onglet en arrière-plan)
-
-    if (state === 'playing') groundScroll += PIPE_SPEED * dt;
+    if (dt > 0.05) dt = 0.05;
+    if (state === 'playing') groundScroll += speedFor(score) * dt;
     update(dt);
     draw();
     requestAnimationFrame(loop);
   }
 
-  // --- Game Over / Leaderboard ----------------------------------------------
+  // --- Game Over + Leaderboard ----------------------------------------------
   const gameoverEl = document.getElementById('gameover');
   const finalScoreEl = document.getElementById('final-score');
-  const form = document.getElementById('score-form');
-  const nameInput = document.getElementById('player-name');
-  const saveBtn = document.getElementById('save-btn');
   const saveStatus = document.getElementById('save-status');
   const replayBtn = document.getElementById('replay');
   const scoresEl = document.getElementById('scores');
@@ -255,63 +265,52 @@
 
   function showGameOver(s) {
     finalScoreEl.textContent = s;
-    saveStatus.textContent = '';
-    saveBtn.disabled = false;
-    saveBtn.textContent = 'Enregistrer mon score';
+    saveStatus.textContent = 'Enregistrement…';
+    saveStatus.classList.remove('error');
     gameoverEl.classList.remove('hidden');
-    nameInput.focus();
   }
-  function hideGameOver() {
-    gameoverEl.classList.add('hidden');
+
+  async function saveScore(value) {
+    try {
+      const res = await fetch('/api/scores', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: pseudo || 'Anonyme', score: value }),
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      saveStatus.textContent = `Score ${value} enregistré ✔`;
+      saveStatus.classList.remove('error');
+      await loadScores();
+    } catch (err) {
+      saveStatus.textContent = 'Échec de l\'enregistrement — réseau ?';
+      saveStatus.classList.add('error');
+      console.error('Envoi du score impossible :', err);
+    }
   }
 
   async function loadScores() {
-    scoresEl.innerHTML = '<li class="empty">Chargement…</li>';
     try {
       const res = await fetch('/api/scores');
       if (!res.ok) throw new Error('HTTP ' + res.status);
-      const rows = await res.json();
-      renderScores(rows);
+      renderScores(await res.json());
     } catch (err) {
-      scoresEl.innerHTML =
-        '<li class="error">Classement indisponible</li>';
+      scoresEl.innerHTML = '<li class="error">Classement indisponible</li>';
       console.error('Lecture du classement impossible :', err);
     }
   }
 
   function renderScores(rows) {
     if (!rows.length) {
-      scoresEl.innerHTML =
-        '<li class="empty">Aucun score — sois le premier !</li>';
+      scoresEl.innerHTML = '<li class="empty">Aucun score — sois le premier !</li>';
       return;
     }
     scoresEl.innerHTML = rows
-      .map(
-        (r) =>
-          `<li><span class="pname">${escapeHtml(r.name)}</span>` +
-          `<span class="pscore">${r.score}</span></li>`
-      )
+      .map((r) => {
+        const me = pseudo && r.name === pseudo ? ' class="me"' : '';
+        return `<li${me}><span class="pname">${escapeHtml(r.name)}</span>` +
+               `<span class="pscore">${r.score}</span></li>`;
+      })
       .join('');
-  }
-
-  async function submitScore(name, value) {
-    saveBtn.disabled = true;
-    saveStatus.textContent = 'Envoi…';
-    try {
-      const res = await fetch('/api/scores', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, score: value }),
-      });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      saveStatus.textContent = 'Score enregistré ✔';
-      saveBtn.textContent = 'Enregistré';
-      await loadScores();
-    } catch (err) {
-      saveStatus.textContent = 'Échec de l\'envoi, réessaie.';
-      saveBtn.disabled = false;
-      console.error('Envoi du score impossible :', err);
-    }
   }
 
   function escapeHtml(str) {
@@ -325,20 +324,11 @@
   canvas.addEventListener('touchstart', (e) => { e.preventDefault(); flap(); }, { passive: false });
   window.addEventListener('keydown', (e) => {
     if (e.code === 'Space' || e.code === 'ArrowUp') {
-      // Ne pas voler si on est en train de taper son pseudo
-      if (document.activeElement === nameInput) return;
+      if (document.activeElement === inputEl) return;  // on tape son pseudo
       e.preventDefault();
       flap();
     }
   });
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    if (saveBtn.disabled) return;
-    const name = nameInput.value.trim() || 'Anonyme';
-    submitScore(name, score);
-  });
-
   replayBtn.addEventListener('click', () => reset());
   refreshBtn.addEventListener('click', () => loadScores());
 
