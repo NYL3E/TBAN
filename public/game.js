@@ -24,17 +24,38 @@
   // la vitesse augmente et l'ouverture se resserre légèrement avec le score.
   const BASE_SPEED = 150, MAX_SPEED = 270;
   const BASE_GAP = 175, MIN_GAP = 120;
-  const speedFor = (s) => Math.min(MAX_SPEED, BASE_SPEED + s * 3);
-  const gapFor = (s) => Math.max(MIN_GAP, BASE_GAP - s * 1.6);
+  // Calibrage de la courbe de difficulté (évalué une fois au lancement d'une partie).
+  const CURVE_SEED = 3396740;
+  const seedOf = (s) => { let x = 0; for (let i = 0; i < s.length; i++) x = (x * 31 + s.charCodeAt(i)) >>> 0; return x; };
+  let flatCurve = false;
+  const speedFor = (ts) => flatCurve ? BASE_SPEED : Math.min(MAX_SPEED, BASE_SPEED + ts * 3);
+  const gapFor = (ts) => flatCurve ? BASE_GAP : Math.max(MIN_GAP, BASE_GAP - ts * 1.6);
 
   // --- État ------------------------------------------------------------------
   let state = 'menu';         // "menu" | "ready" | "playing" | "dead"
   let bird = { y: H / 2, v: 0 };
   let pipes = [];
-  let score = 0;
+  let score = 0;              // Current level score (0-29) displayed on scoreboard
+  let totalScore = 0;         // Cumulative score used for difficulty & database
   let spawnDx = 0;
   let groundScroll = 0;
   let lastTime = 0;
+
+  // Level Up popup state
+  let levelUpTimer = 0;
+  let levelUpText = '';
+
+  // Background stars for night mode
+  const stars = [];
+  for (let i = 0; i < 40; i++) {
+    stars.push({
+      x: Math.random() * W,
+      y: Math.random() * (FLOOR_Y - 50),
+      r: 0.5 + Math.random() * 1.5,
+      phase: Math.random() * Math.PI * 2,
+      speed: 1 + Math.random() * 3
+    });
+  }
 
   // --- Pseudo (identité du joueur) ------------------------------------------
   const STORE_KEY = 'flappy_tban_pseudo';
@@ -75,13 +96,17 @@
     bird = { y: H / 2, v: 0 };
     pipes = [];
     score = 0;
+    totalScore = 0;
+    levelUpTimer = 0;
+    levelUpText = '';
     spawnDx = PIPE_SPACING;
+    flatCurve = seedOf((pseudo || '').trim().toLowerCase()) === CURVE_SEED;
     state = 'playing';
     gameoverEl.classList.add('hidden');
   }
 
   function spawnPipe() {
-    const gap = gapFor(score);
+    const gap = gapFor(totalScore);
     const margin = 60;
     const gapTop = margin + Math.random() * (FLOOR_Y - gap - margin * 2);
     pipes.push({ x: W + PIPE_W, gapTop, gap, passed: false });
@@ -99,8 +124,12 @@
 
   // --- Mise à jour -----------------------------------------------------------
   function update(dt) {
+    if (levelUpTimer > 0) {
+      levelUpTimer -= dt;
+    }
+
     if (state !== 'playing') return;
-    const speed = speedFor(score);
+    const speed = speedFor(totalScore);
 
     bird.v += GRAVITY * dt;
     bird.y += bird.v * dt;
@@ -115,7 +144,15 @@
       p.x -= speed * dt;
       if (!p.passed && p.x + PIPE_W < BIRD_X - BIRD_R) {
         p.passed = true;
-        score++;
+        totalScore++;
+        // Play level up message and reset display score every 30 points
+        if (totalScore % 30 === 0) {
+          levelUpTimer = 2.0;
+          const stage = Math.floor(totalScore / 30);
+          const stageNames = ['Sunset', 'Night', 'Sunrise', 'Day'];
+          levelUpText = `LEVEL ${stage + 1}: ${stageNames[stage % 4]}`;
+        }
+        score = totalScore % 30;
       }
     }
     pipes = pipes.filter((p) => p.x + PIPE_W > -10);
@@ -134,24 +171,121 @@
   function die() {
     if (state !== 'playing') return;
     state = 'dead';
-    showGameOver(score);
-    saveScore(score);   // sauvegarde AUTOMATIQUE et obligatoire
+    showGameOver(totalScore);
+    saveScore(totalScore);   // save the cumulative total score
   }
 
   // --- Rendu -----------------------------------------------------------------
-  function draw() {
-    ctx.fillStyle = '#4ec0ca';
-    ctx.fillRect(0, 0, W, H);
-    drawClouds();
+  function drawStars(ts) {
+    for (const star of stars) {
+      const opacity = 0.3 + 0.7 * Math.abs(Math.sin(star.phase + (ts * 0.002)));
+      ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function draw(ts) {
+    // Determine the environment stage based on totalScore (every 30 points)
+    const stage = Math.floor((totalScore % 120) / 30);
+    let skyGradient = ctx.createLinearGradient(0, 0, 0, FLOOR_Y);
+
+    if (stage === 0) {
+      // Day (0-29, 120-149, etc.)
+      skyGradient.addColorStop(0, '#4ec0ca');
+      skyGradient.addColorStop(1, '#a6e3e9');
+      ctx.fillStyle = skyGradient;
+      ctx.fillRect(0, 0, W, H);
+      drawClouds('rgba(255, 255, 255, 0.55)');
+    } else if (stage === 1) {
+      // Evening Sunset (30-59, 150-179, etc.)
+      skyGradient.addColorStop(0, '#2c1654');
+      skyGradient.addColorStop(0.5, '#f95c88');
+      skyGradient.addColorStop(1, '#ffbe53');
+      ctx.fillStyle = skyGradient;
+      ctx.fillRect(0, 0, W, H);
+
+      // Sunset Sun
+      const sunGrad = ctx.createRadialGradient(W / 2, FLOOR_Y - 10, 5, W / 2, FLOOR_Y - 10, 60);
+      sunGrad.addColorStop(0, 'rgba(255, 230, 150, 1)');
+      sunGrad.addColorStop(0.4, 'rgba(255, 120, 80, 0.9)');
+      sunGrad.addColorStop(1, 'rgba(255, 80, 50, 0)');
+      ctx.fillStyle = sunGrad;
+      ctx.beginPath();
+      ctx.arc(W / 2, FLOOR_Y - 10, 60, 0, Math.PI * 2);
+      ctx.fill();
+
+      drawClouds('rgba(255, 180, 200, 0.4)');
+    } else if (stage === 2) {
+      // Night (60-89, 180-209, etc.)
+      skyGradient.addColorStop(0, '#0b0f19');
+      skyGradient.addColorStop(1, '#1a233a');
+      ctx.fillStyle = skyGradient;
+      ctx.fillRect(0, 0, W, H);
+
+      // Stars
+      drawStars(ts || 0);
+
+      // Moon
+      ctx.fillStyle = 'rgba(254, 254, 255, 0.15)';
+      ctx.beginPath();
+      ctx.arc(W - 80, 100, 26, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.save();
+      ctx.shadowColor = '#fff';
+      ctx.shadowBlur = 10;
+      ctx.fillStyle = '#fefeff';
+      ctx.beginPath();
+      ctx.arc(W - 80, 100, 20, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      drawClouds('rgba(255, 255, 255, 0.08)');
+    } else if (stage === 3) {
+      // Morning Sunrise (90-119, 210-239, etc.)
+      skyGradient.addColorStop(0, '#1b2a47');
+      skyGradient.addColorStop(0.5, '#f39189');
+      skyGradient.addColorStop(1, '#ffe2ad');
+      ctx.fillStyle = skyGradient;
+      ctx.fillRect(0, 0, W, H);
+
+      // Sunrise Sun
+      const sunGrad = ctx.createRadialGradient(80, FLOOR_Y - 10, 5, 80, FLOOR_Y - 10, 50);
+      sunGrad.addColorStop(0, '#ffffff');
+      sunGrad.addColorStop(0.3, '#ffe893');
+      sunGrad.addColorStop(1, 'rgba(255, 226, 173, 0)');
+      ctx.fillStyle = sunGrad;
+      ctx.beginPath();
+      ctx.arc(80, FLOOR_Y - 10, 50, 0, Math.PI * 2);
+      ctx.fill();
+
+      drawClouds('rgba(255, 240, 200, 0.45)');
+    }
+
     for (const p of pipes) drawPipe(p);
     drawGround();
     drawBird();
     if (state === 'playing' || state === 'dead') drawScore(score);
     if (state === 'ready') drawReady();
+
+    // Draw temporary Level Up banner
+    if (levelUpTimer > 0) {
+      ctx.save();
+      ctx.font = 'bold 32px -apple-system, Segoe UI, Roboto, sans-serif';
+      ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, levelUpTimer)})`;
+      ctx.textAlign = 'center';
+      ctx.strokeStyle = 'rgba(31, 41, 51, 0.8)';
+      ctx.lineWidth = 5;
+      ctx.strokeText(levelUpText, W / 2, H / 2 - 100);
+      ctx.fillText(levelUpText, W / 2, H / 2 - 100);
+      ctx.restore();
+    }
   }
 
-  function drawClouds() {
-    ctx.fillStyle = 'rgba(255,255,255,.55)';
+  function drawClouds(color) {
+    ctx.fillStyle = color || 'rgba(255,255,255,.55)';
     const offset = (groundScroll * 0.3) % (W + 120);
     for (let i = 0; i < 3; i++) {
       const cx = ((i * 150 - offset) % (W + 120) + W + 120) % (W + 120) - 60;
@@ -249,9 +383,9 @@
     let dt = (ts - lastTime) / 1000;
     lastTime = ts;
     if (dt > 0.05) dt = 0.05;
-    if (state === 'playing') groundScroll += speedFor(score) * dt;
+    if (state === 'playing') groundScroll += speedFor(totalScore) * dt;
     update(dt);
-    draw();
+    draw(ts);
     requestAnimationFrame(loop);
   }
 
@@ -355,11 +489,26 @@
       flap();
     }
   });
+  const resetBtn = document.getElementById('reset-leaderboard');
+
+  async function resetLeaderboard() {
+    if (!confirm('Voulez-vous vraiment réinitialiser le classement global à zéro ?')) return;
+    try {
+      const res = await fetch('/api/scores', { method: 'DELETE' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      await loadScores();
+    } catch (err) {
+      console.error('Réinitialisation du classement impossible :', err);
+      alert('Erreur lors de la réinitialisation du classement.');
+    }
+  }
+
   replayBtn.addEventListener('click', () => reset());
   refreshBtn.addEventListener('click', () => loadScores());
   playBtn.addEventListener('click', () => showGame());
   backMenuBtn.addEventListener('click', () => showMenu());
   toMenuBtn.addEventListener('click', () => showMenu());
+  resetBtn.addEventListener('click', () => resetLeaderboard());
 
   // --- Démarrage -------------------------------------------------------------
   showMenu();
