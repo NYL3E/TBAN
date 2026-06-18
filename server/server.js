@@ -63,6 +63,18 @@ app.post('/api/scores', async (req, res) => {
   }
 });
 
+// --- Réinitialiser le classement (scores vidés) ------------------------------
+app.delete('/api/scores', async (_req, res) => {
+  try {
+    await pool.query('TRUNCATE TABLE scores RESTART IDENTITY;');
+    console.log('[api] Classement réinitialisé (scores vidés).');
+    res.json({ message: 'Classement réinitialisé avec succès' });
+  } catch (err) {
+    console.error('[api] Impossible de réinitialiser le classement :', err.message);
+    res.status(500).json({ error: 'Impossible de réinitialiser le classement' });
+  }
+});
+
 // On démarre le serveur tout de suite : le healthcheck répond même pendant
 // que la base finit de booter (il signalera "db: down" en attendant).
 app.listen(PORT, () => {
