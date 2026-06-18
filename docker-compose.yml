@@ -1,0 +1,40 @@
+# Stack complète : application Node + base PostgreSQL + volume persistant.
+# Fonctionne à l'identique en local (`docker compose up`) et sur Coolify.
+services:
+  app:
+    build: .
+    image: flappy-tban
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgres://${POSTGRES_USER:-flappy}:${POSTGRES_PASSWORD:-flappy}@db:5432/${POSTGRES_DB:-flappy}
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-flappy}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-flappy}
+      POSTGRES_DB: ${POSTGRES_DB:-flappy}
+    volumes:
+      # Volume nommé = la donnée métier (les scores) survit aux redéploiements.
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-flappy} -d ${POSTGRES_DB:-flappy}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:
