@@ -5,146 +5,173 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rapport — Flappy TBAN · Projet final « Déployer et exploiter une application web »</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
   :root{
-    --ink:#1a1d29; --muted:#5b6172; --line:#dfe2ea; --accent:#4f46e5;
-    --soft:#eef2ff; --ok:#16a34a; --okbg:#f0fdf4; --warn:#b45309; --warnbg:#fffbeb;
-    --bad:#b91c1c;
+    --ink:#1e293b; --muted:#64748b; --line:#e2e8f0; --accent:#4f46e5; --accent2:#7c3aed;
+    --soft:#eef2ff; --ok:#16a34a; --okbg:#f0fdf4; --warn:#b45309; --warnbg:#fffbeb; --bad:#b91c1c;
+    --yellow:#f7c948; --yellow-d:#d99e00;
   }
   *{box-sizing:border-box}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-       color:var(--ink); line-height:1.5; margin:0; background:#f6f7fb;}
-  .page{max-width:830px; margin:0 auto; background:#fff; padding:40px 48px;}
-  header.cover{border-bottom:3px solid var(--accent); padding-bottom:18px; margin-bottom:22px;}
-  .kicker{color:var(--accent); font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:.78rem;}
-  h1{font-size:1.8rem; margin:6px 0 4px;}
-  .sub{color:var(--muted); font-size:1rem;}
-  h2{font-size:1.18rem; margin:26px 0 8px; padding-top:14px; border-top:1px solid var(--line); color:var(--accent);}
-  h3{font-size:1rem; margin:14px 0 4px;}
-  p,li{font-size:.94rem;}
-  .meta{display:grid; grid-template-columns:1fr 1fr; gap:5px 24px; margin-top:12px; font-size:.9rem;}
-  .meta b{color:var(--muted); font-weight:600;}
-  .members{margin-top:8px; font-size:.95rem;}
-  .members b{font-weight:700;}
-  .fill{background:#fff3cd; border-bottom:1px dashed #d4a017; padding:0 4px; font-weight:600;}
-  table{border-collapse:collapse; width:100%; margin:10px 0; font-size:.86rem;}
-  th,td{border:1px solid var(--line); padding:7px 9px; text-align:left; vertical-align:top;}
-  th{background:var(--soft); color:var(--ink); font-weight:700;}
-  .ok{color:var(--ok); font-weight:700;}
-  .no{color:var(--muted); font-weight:600;}
-  .bad{color:var(--bad); font-weight:700;}
-  .box{border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin:10px 0; background:#fafbff;}
+  html{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+  body{font-family:'Montserrat',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+       color:var(--ink); line-height:1.55; margin:0; background:#f1f5f9; font-size:13px;}
+  .page{max-width:840px; margin:0 auto; background:#fff;}
+  .pad{padding:30px 46px;}
+
+  /* ---------- COVER ---------- */
+  .cover{position:relative; min-height:1000px; color:#fff; padding:0; overflow:hidden;
+         background:linear-gradient(150deg,#4f46e5 0%,#7c3aed 55%,#4ec0ca 130%);}
+  .cover .inner{padding:70px 56px 0;}
+  .cover .kicker{font-size:.8rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase; opacity:.85;}
+  .cover .bird{font-size:5.4rem; line-height:1; margin:34px 0 6px; filter:drop-shadow(0 10px 18px rgba(0,0,0,.25));}
+  .cover h1{font-size:3.5rem; font-weight:900; letter-spacing:-1.5px; margin:0;}
+  .cover h1 b{color:var(--yellow);}
+  .cover .sub{font-size:1.18rem; font-weight:500; opacity:.95; margin-top:8px; max-width:560px;}
+  .cover .members{margin-top:46px;}
+  .cover .members .lbl{font-size:.78rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; opacity:.8;}
+  .cover .members .names{font-size:1.45rem; font-weight:800; margin-top:6px; line-height:1.45;}
+  .cover .grpnote{font-size:.92rem; opacity:.85; margin-top:6px;}
+  .cover .facts{position:absolute; left:0; right:0; bottom:0; background:rgba(15,23,42,.22);
+                backdrop-filter:blur(3px); padding:22px 56px; display:grid;
+                grid-template-columns:1fr 1fr; gap:10px 30px;}
+  .cover .facts div{font-size:.92rem;}
+  .cover .facts b{display:block; font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; opacity:.75; margin-bottom:1px;}
+  .cover .facts a, .cover .facts span{color:#fff; font-weight:600; text-decoration:none; word-break:break-all;}
+
+  /* ---------- HEADINGS ---------- */
+  h2{font-size:1.4rem; font-weight:800; color:var(--accent); margin:0 0 4px;
+     padding-bottom:8px; border-bottom:2px solid var(--line);}
+  .sec{padding:28px 46px 6px;}
+  .sec.alt{background:#f8fafc;}
+  h3{font-size:1rem; font-weight:700; margin:16px 0 5px;}
+  p,li{font-size:.92rem;}
+  .lead{font-size:1rem; color:#334155;}
+
+  /* ---------- COMPONENTS ---------- */
+  table{border-collapse:collapse; width:100%; margin:12px 0; font-size:.85rem;}
+  th,td{border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top;}
+  th{background:var(--soft); font-weight:700;}
+  .ok{color:var(--ok); font-weight:700;} .no{color:var(--muted); font-weight:600;} .bad{color:var(--bad); font-weight:700;}
+  code{background:#eef2f7; padding:1px 6px; border-radius:5px; font-size:.85em; font-family:'SFMono-Regular',Consolas,monospace;}
+  pre{background:#0f172a; color:#e2e8f0; padding:13px 16px; border-radius:10px; overflow:auto;
+      font-size:.78rem; line-height:1.5; font-family:'SFMono-Regular',Consolas,monospace;}
+  pre .c{color:#7dd3fc;}
+  .box{border:1px solid var(--line); border-radius:10px; padding:13px 16px; margin:12px 0; background:#fafbff;}
   .box.ok{background:var(--okbg); border-color:#bbf7d0;}
   .box.warn{background:var(--warnbg); border-color:#fde68a;}
-  .label{font-size:.74rem; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:var(--muted);}
-  code{background:#eef0f5; padding:1px 5px; border-radius:4px; font-size:.85em;}
-  pre{background:#0f172a; color:#e2e8f0; padding:12px 14px; border-radius:8px; overflow:auto; font-size:.78rem; line-height:1.45;}
-  pre .c{color:#7dd3fc}
-  .shot{border:2px dashed #c4c8d4; border-radius:8px; padding:18px; text-align:center; color:var(--muted);
-        background:#fbfbfd; font-size:.85rem; margin:8px 0;}
-  ul,ol{margin:6px 0 6px 0; padding-left:22px;} li{margin:3px 0;}
-  .footer{margin-top:24px; padding-top:12px; border-top:1px solid var(--line); color:var(--muted); font-size:.8rem;}
-  .diagram{background:#0f172a; color:#e2e8f0; border-radius:8px; padding:16px 18px; font-size:.8rem; line-height:1.5; white-space:pre; overflow:auto;}
+  .label{font-size:.7rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:5px;}
+  ul,ol{margin:6px 0; padding-left:22px;} li{margin:3px 0;}
+  .diagram{background:#0f172a; color:#e2e8f0; border-radius:10px; padding:18px 22px; font-size:.8rem;
+           line-height:1.55; white-space:pre; overflow:auto; font-family:'SFMono-Regular',Consolas,monospace;}
+  figure{margin:14px 0;}
+  figure img{width:100%; border:1px solid var(--line); border-radius:12px; box-shadow:0 8px 24px rgba(15,23,42,.12); display:block;}
+  figcaption{font-size:.78rem; color:var(--muted); margin-top:7px; text-align:center; font-weight:500;}
+  .shots{display:grid; grid-template-columns:1.32fr 1fr; gap:16px; align-items:start;}
+  .pill{display:inline-block; background:var(--soft); color:var(--accent); font-weight:700; font-size:.7rem;
+        padding:3px 9px; border-radius:999px; letter-spacing:.04em; text-transform:uppercase;}
+  .foot{padding:18px 46px 36px; color:var(--muted); font-size:.78rem; border-top:1px solid var(--line); margin-top:20px;}
+
   @media print{
-    body{background:#fff;} .page{padding:0; max-width:none;}
-    h2{break-after:avoid;} table,.box,.shot,pre,.diagram{break-inside:avoid;}
-    @page{margin:15mm 14mm;}
+    body{background:#fff; font-size:11.5px;}
+    .page{max-width:none;}
+    .cover{min-height:auto; height:1012px; page-break-after:always;}
+    .sec{padding:16px 0 8px;}
+    .sec.alt{background:#fff;}
+    .foot{padding:14px 0 0;}
+    h2{break-after:avoid;}
+    table,.box,pre,.diagram,figure,ul{break-inside:avoid;}
   }
 </style>
 </head>
 <body>
 <div class="page">
 
-<!-- ============================== PAGE DE GARDE ============================== -->
+<!-- ============================ COVER ============================ -->
 <header class="cover">
-  <div class="kicker">Module Déploiement d'applications · Bachelor 3 Tech &amp; Business — Chef de Projet Digital</div>
-  <h1>Flappy TBAN — Déployer et exploiter une application web</h1>
-  <div class="sub">Un jeu Flappy Bird avec un leaderboard en ligne, du code au monitoring en production.</div>
-  <div class="members">
-    <b>Groupe :</b> TBAN &nbsp;·&nbsp;
-    <b>Membres :</b> Lenny TRIDAT · Alexis BRUN · Raphaël ASSY · Seno NGUYEN
+  <div class="inner">
+    <div class="kicker">Module Déploiement d'applications · Bachelor 3 Tech &amp; Business — Chef de Projet Digital</div>
+    <div class="bird">🐤</div>
+    <h1>Flappy <b>TBAN</b></h1>
+    <div class="sub">Déployer et exploiter une application web : un Flappy Bird avec leaderboard en ligne, du code au monitoring en production.</div>
+    <div class="members">
+      <div class="lbl">Groupe TBAN — étudiants ayant participé au projet</div>
+      <div class="names">Lenny TRIDAT · Alexis BRUN<br>Raphaël ASSY · Seno NGUYEN</div>
+      <div class="grpnote">« TBAN » = <b>T</b>RIDAT · <b>B</b>RUN · <b>A</b>SSY · <b>N</b>GUYEN</div>
+    </div>
   </div>
-  <div class="meta">
-    <div><b>Application :</b> Flappy TBAN (jeu + leaderboard)</div>
-    <div><b>Date :</b> 18 juin 2026</div>
-    <div><b>Dépôt GitHub (public) :</b> github.com/NYL3E/TBAN</div>
-    <div><b>URL publique (HTTPS) :</b> https://tban.planbadge.fr</div>
+  <div class="facts">
+    <div><b>Application</b><span>Flappy TBAN — jeu + leaderboard</span></div>
+    <div><b>Date</b><span>18 juin 2026</span></div>
+    <div><b>URL publique (HTTPS)</b><a>https://tban.planbadge.fr</a></div>
+    <div><b>Dépôt GitHub (public)</b><a>github.com/NYL3E/TBAN</a></div>
   </div>
-  <p style="font-size:.82rem;color:var(--muted);margin-top:10px">
-    Seuls les étudiants mentionnés ci-dessus et visibles dans les commits du dépôt sont considérés comme contributeurs au projet.
-  </p>
 </header>
 
-<div class="box"><span class="label">Synthèse</span>
-<b>Flappy TBAN</b> est un mini-jeu <b>Flappy Bird</b> jouable dans le navigateur, doublé d'un <b>leaderboard
-persistant</b> : chaque joueur enregistre son score, stocké dans une base <b>PostgreSQL</b> et affiché dans un
-classement « Top 10 ». L'objectif n'était pas de produire un jeu complexe, mais de <b>démontrer la maîtrise du cycle
-de vie complet d'une application</b> : développement → versionnement Git → conteneurisation Docker → déploiement
-Coolify → exploitation (monitoring, logs, mises à jour, sauvegardes, support). L'application est <b>multi-conteneurs</b>
-(un service applicatif Node.js + un service PostgreSQL avec volume persistant) et expose une route de santé
-<code>/health</code> utilisée à la fois par le Healthcheck Coolify et par Uptime Kuma.</div>
+<!-- ============================ SYNTHÈSE ============================ -->
+<section class="sec">
+  <h2>Synthèse</h2>
+  <p class="lead"><b>Flappy TBAN</b> est un mini-jeu <b>Flappy Bird</b> jouable dans le navigateur, doublé d'un
+  <b>leaderboard persistant</b> : chaque joueur enregistre son score, stocké dans une base <b>PostgreSQL</b> et affiché
+  dans un classement « Top 10 ». L'objectif n'était pas de produire un jeu complexe, mais de <b>démontrer la maîtrise du
+  cycle de vie complet d'une application</b> : développement → versionnement Git → conteneurisation Docker → déploiement
+  Coolify → exploitation (monitoring, logs, mises à jour, sauvegardes, support). L'application est <b>multi-conteneurs</b>
+  (service Node.js + service PostgreSQL avec volume persistant) et expose une route de santé <code>/health</code> utilisée
+  par le Healthcheck Coolify et par Uptime Kuma.</p>
+  <div class="shots">
+    <figure><img src="img/app-menu.png" alt="Écran d'accueil de Flappy TBAN">
+      <figcaption>Écran d'accueil : pseudo, bouton Jouer, classement Top 10 (données réelles) et règles.</figcaption></figure>
+    <figure><img src="img/app-game.png" alt="Flappy TBAN en cours de partie">
+      <figcaption>En jeu : oiseau, tuyaux, score en temps réel.</figcaption></figure>
+  </div>
+</section>
 
-<!-- ============================== 1. PRÉSENTATION ============================== -->
-<h2>1. Présentation du projet</h2>
-<table>
-  <tr><th style="width:26%">Objectif de l'application</th>
-      <td>Proposer un jeu d'arcade simple et addictif (Flappy Bird) <b>avec une dimension compétitive</b> :
-      un classement en ligne des meilleurs scores, partagé entre tous les joueurs. Le projet sert de support pour
-      illustrer un déploiement et une exploitation réels.</td></tr>
-  <tr><th>Public visé</th>
-      <td>Tout utilisateur grand public (joueurs occasionnels) sur ordinateur ou mobile — l'interface est
-      responsive et se joue à la souris, au clavier (Espace) ou au tactile.</td></tr>
-  <tr><th>Fonctionnalités principales</th>
-      <td>
-        <ul>
-          <li><b>Écran d'accueil (menu)</b> : pseudo, bouton « Jouer », classement et règles avant de lancer la partie.</li>
-          <li>Jeu Flappy Bird complet : gravité, tuyaux, collisions, score en temps réel.</li>
-          <li><b>Difficulté progressive</b> : la vitesse augmente et l'ouverture se resserre doucement avec le score (effet borné, non punitif).</li>
-          <li><b>Décors dynamiques</b> : l'ambiance change par paliers de score (jour, coucher de soleil, nuit étoilée…) avec un effet « niveau ».</li>
-          <li><b>Pseudo défini une seule fois</b> (mémorisé via <code>localStorage</code>) → identité de joueur stable.</li>
-          <li><b>Sauvegarde automatique</b> du score en fin de partie (API REST → PostgreSQL), sans action manuelle.</li>
-          <li><b>Leaderboard « Top 10 »</b> en direct, avec une action de <b>réinitialisation</b> du classement.</li>
-          <li>Route de santé <code>/health</code> pour la supervision.</li>
-        </ul>
-      </td></tr>
-  <tr><th>Donnée métier persistée</th>
-      <td>Les <b>scores</b> des joueurs (table <code>scores</code> : pseudo, score, date). C'est cette donnée qui
-      doit survivre aux redémarrages et être sauvegardée.</td></tr>
-  <tr><th>Solution d'IA intégrée ?</th>
-      <td><b>Non</b> — le produit n'embarque aucune fonctionnalité d'IA. <span class="no">(L'IA a uniquement servi
-      d'assistant de développement, voir le Retour d'expérience.)</span></td></tr>
-</table>
+<!-- ============================ 1. PRÉSENTATION ============================ -->
+<section class="sec alt">
+  <h2>1. Présentation du projet</h2>
+  <table>
+    <tr><th style="width:24%">Objectif</th><td>Un jeu d'arcade simple et addictif <b>avec une dimension compétitive</b> :
+      un classement en ligne partagé entre tous les joueurs. Le projet sert de support pour illustrer un déploiement et une exploitation réels.</td></tr>
+    <tr><th>Public visé</th><td>Tout public (joueurs occasionnels), sur ordinateur ou mobile — interface responsive jouable à la souris, au clavier (Espace) ou au tactile.</td></tr>
+    <tr><th>Fonctionnalités</th><td>
+      <ul style="margin:0">
+        <li><b>Écran d'accueil</b> : pseudo, bouton « Jouer », classement et règles.</li>
+        <li>Jeu Flappy Bird complet : gravité, tuyaux, collisions, score temps réel.</li>
+        <li><b>Difficulté progressive</b> (vitesse + resserrement de l'ouverture, bornés et non punitifs).</li>
+        <li><b>Décors dynamiques</b> : l'ambiance change par paliers (jour, coucher de soleil, nuit étoilée…).</li>
+        <li><b>Pseudo défini une seule fois</b> (mémorisé via <code>localStorage</code>) → identité stable.</li>
+        <li><b>Sauvegarde automatique</b> du score en fin de partie (API → PostgreSQL), sans action manuelle.</li>
+        <li><b>Leaderboard « Top 10 »</b> en direct, avec réinitialisation possible du classement.</li>
+      </ul></td></tr>
+    <tr><th>Donnée métier persistée</th><td>Les <b>scores</b> des joueurs (table <code>scores</code> : pseudo, score, date). C'est la donnée qui doit survivre aux redémarrages et être sauvegardée.</td></tr>
+    <tr><th>Solution d'IA dans le produit</th><td><b>Non</b> — aucune IA embarquée. <span class="no">L'IA a uniquement servi d'assistant de développement (voir Retour d'expérience).</span></td></tr>
+  </table>
+</section>
 
-<!-- ============================== 2. DÉPÔT GITHUB ============================== -->
-<h2>2. Dépôt GitHub</h2>
-<table>
-  <tr><th style="width:26%">Dépôt</th><td><b>github.com/NYL3E/TBAN</b> — public.</td></tr>
-  <tr><th>Visibilité des contributeurs</th>
-      <td>Les commits portent les comptes GitHub des membres. Comme les pseudos ne reprennent pas forcément
-      l'identité civile, le tableau de correspondance ci-dessous fait le lien.</td></tr>
-</table>
-<h3>Correspondance pseudo GitHub ↔ étudiant</h3>
-<table>
-  <tr><th>Étudiant</th><th>Pseudo GitHub</th><th>Exemples de contributions</th></tr>
-  <tr><td>Lenny TRIDAT</td><td><b>NYL3E</b> &amp; <b>nylegoat</b> (propriétaire du dépôt)</td><td>Backend Express &amp; API <code>/api/scores</code>, intégration PostgreSQL.</td></tr>
-  <tr><td>Alexis BRUN</td><td><b>Vexta-AI</b></td><td>Moteur du jeu (canvas), physique/collisions, difficulté, <b>écran d'accueil (menu)</b>.</td></tr>
-  <tr><td>Raphaël ASSY</td><td><b>tygh7</b></td><td>Docker, déploiement &amp; routage Coolify, <b>décors dynamiques + reset du classement</b>.</td></tr>
-  <tr><td>Seno NGUYEN</td><td><b>senonguyen</b></td><td>UI / leaderboard, pseudo &amp; sauvegarde auto, rapport.</td></tr>
-</table>
-<div class="box"><span class="label">Convention de commits (messages à sens métier)</span>
-<pre>feat(game): boucle de jeu et collisions des tuyaux
-feat(api): endpoint POST /api/scores + validation du score
-feat(db): table scores + connexion PostgreSQL avec retry
-feat(ui): affichage du leaderboard Top 10
-chore(docker): Dockerfile + docker-compose (app + postgres)
-ops(health): route /health pour Healthcheck Coolify &amp; Uptime Kuma
-docs: README runbook de déploiement</pre>
-Chaque commit décrit <b>une intention métier</b> claire plutôt qu'un « update » générique. La répartition montre une
-participation des quatre membres.</div>
-<div class="shot">📷 Capture — page GitHub du dépôt (public) + onglet « Contributors » montrant les 4 membres.</div>
+<!-- ============================ 2. DÉPÔT GITHUB ============================ -->
+<section class="sec">
+  <h2>2. Dépôt GitHub</h2>
+  <p>Code hébergé sur <b>github.com/NYL3E/TBAN</b> — dépôt <b>public</b>. Le développement a suivi un véritable
+  <b>workflow d'équipe</b> : chaque membre a travaillé sur sa <b>branche de fonctionnalité</b> (page d'accueil, décors dynamiques)
+  intégrée ensuite par <b>Pull Request</b> et merge. <b>18 commits</b>, <b>3 branches</b>, <b>6 contributeurs</b> visibles.</p>
+  <figure><img src="img/github-commits.png" alt="Historique des commits — tous les contributeurs">
+    <figcaption>Historique des commits sur <code>main</code> : on y voit les commits de <b>tous les membres</b> —
+    Seno NGUYEN, nylegoat (Lenny TRIDAT), Vexta-AI (Alexis BRUN), tygh7 / Raphaël ASSY — avec des messages à signification métier.</figcaption></figure>
+  <figure><img src="img/github.png" alt="Dépôt GitHub public NYL3E/TBAN">
+    <figcaption>Le dépôt est <b>public</b> : 18 commits, 3 branches, 6 contributeurs.</figcaption></figure>
+  <h3>Correspondance compte GitHub ↔ étudiant</h3>
+  <table>
+    <tr><th>Étudiant</th><th>Compte GitHub</th><th>Contributions principales</th></tr>
+    <tr><td>Lenny TRIDAT</td><td><b>NYL3E</b> &amp; <b>nylegoat</b> (propriétaire)</td><td>Backend Express &amp; API <code>/api/scores</code>, intégration PostgreSQL, merge final.</td></tr>
+    <tr><td>Alexis BRUN</td><td><b>Vexta-AI</b></td><td>Moteur du jeu (canvas), physique/collisions, difficulté, écran d'accueil.</td></tr>
+    <tr><td>Raphaël ASSY</td><td><b>tygh7</b></td><td>Docker, déploiement &amp; routage Coolify, décors dynamiques + reset du classement.</td></tr>
+    <tr><td>Seno NGUYEN</td><td><b>senonguyen</b></td><td>UI / leaderboard, pseudo &amp; sauvegarde auto, rapport.</td></tr>
+  </table>
+</section>
 
-<!-- ============================== 3. ARCHITECTURE ============================== -->
-<h2>3. Architecture</h2>
-<div class="diagram">Utilisateur (navigateur, PC / mobile)
+<!-- ============================ 3. ARCHITECTURE ============================ -->
+<section class="sec alt">
+  <h2>3. Architecture</h2>
+  <div class="diagram">Utilisateur (navigateur, PC / mobile)
         │  HTTPS
         ▼
    Internet
@@ -162,192 +189,164 @@ participation des quatre membres.</div>
    └─ Conteneur « db »   : PostgreSQL 16
           • table « scores »
           • volume persistant « db_data »  ←  la donnée métier</div>
-<table>
-  <tr><th style="width:26%">Couche</th><th>Technologie</th><th>Rôle</th></tr>
-  <tr><td>Frontend</td><td>HTML / CSS / JavaScript vanilla (canvas 2D)</td><td>Le jeu + l'affichage du classement. Zéro dépendance front.</td></tr>
-  <tr><td>Backend</td><td>Node.js 20 + Express + <code>pg</code></td><td>Sert les fichiers statiques <b>et</b> l'API REST des scores.</td></tr>
-  <tr><td>Base de données</td><td>PostgreSQL 16</td><td>Persistance des scores. Table <code>scores(id, name, score, created_at)</code> + index sur <code>score</code>.</td></tr>
-  <tr><td>Conteneurisation</td><td>Docker + Docker Compose</td><td>Deux services orchestrés ensemble, volume nommé pour la donnée.</td></tr>
-  <tr><td>Plateforme</td><td>Coolify (Traefik, Let's Encrypt)</td><td>Build, déploiement, HTTPS, healthcheck, logs.</td></tr>
-</table>
+  <table>
+    <tr><th style="width:22%">Couche</th><th>Technologie</th><th>Rôle</th></tr>
+    <tr><td>Frontend</td><td>HTML / CSS / JavaScript vanilla (canvas 2D)</td><td>Le jeu + l'affichage du classement. Zéro dépendance front.</td></tr>
+    <tr><td>Backend</td><td>Node.js 20 + Express + <code>pg</code></td><td>Sert les fichiers statiques <b>et</b> l'API REST des scores.</td></tr>
+    <tr><td>Base de données</td><td>PostgreSQL 16</td><td>Persistance des scores : <code>scores(id, name, score, created_at)</code> + index.</td></tr>
+    <tr><td>Conteneurisation</td><td>Docker + Docker Compose</td><td>Deux services orchestrés, volume nommé pour la donnée.</td></tr>
+    <tr><td>Plateforme</td><td>Coolify (Traefik, Let's Encrypt)</td><td>Build, déploiement, HTTPS, healthcheck, logs.</td></tr>
+  </table>
+</section>
 
-<!-- ============================== 4. DÉPLOIEMENT ============================== -->
-<h2>4. Déploiement</h2>
-<h3>Comment l'application a été déployée</h3>
-<ol>
-  <li>Le code est poussé sur un dépôt <b>GitHub public</b>.</li>
-  <li>Dans Coolify : <b>New Resource → Docker Compose</b>, dépôt connecté, branche <code>main</code>.</li>
-  <li>Coolify lit le <code>docker-compose.yml</code> et construit les deux services <b>app</b> + <b>db</b>.</li>
-  <li>Les variables d'environnement (<code>POSTGRES_USER</code>, <code>POSTGRES_PASSWORD</code>,
-      <code>POSTGRES_DB</code>, <code>DATABASE_URL</code>) sont renseignées dans Coolify.</li>
-  <li>Le domaine public est associé au service <b>app</b> (port <b>3000</b>), <b>HTTPS</b> activé (Let's Encrypt).</li>
-  <li>Le <b>Healthcheck</b> Coolify pointe sur <code>/health</code> → l'app passe en <code>running:healthy</code>.</li>
-</ol>
-<div class="box"><span class="label">Preuve technique — vérifications réelles sur l'application en production</span>
-<pre><span class="c"># Réponse HTTPS avec certificat Let's Encrypt valide</span>
+<!-- ============================ 4. DÉPLOIEMENT ============================ -->
+<section class="sec">
+  <h2>4. Déploiement</h2>
+  <h3>Comment l'application a été déployée</h3>
+  <ol>
+    <li>Code poussé sur le dépôt <b>GitHub public</b>.</li>
+    <li>Coolify : <b>New Resource → Docker Compose</b>, dépôt connecté, branche <code>main</code>.</li>
+    <li>Coolify lit le <code>docker-compose.yml</code> et construit les services <b>app</b> + <b>db</b>.</li>
+    <li>Variables d'environnement renseignées (<code>POSTGRES_*</code>, <code>DATABASE_URL</code>).</li>
+    <li>Domaine public associé au service <b>app</b> (port <b>3000</b>), <b>HTTPS</b> Let's Encrypt activé.</li>
+    <li><b>Healthcheck</b> sur <code>/health</code> → l'application passe en <code>running:healthy</code>.</li>
+  </ol>
+  <div class="box"><span class="label">Preuve technique — vérifications réelles sur l'application en production</span>
+<pre><span class="c"># Réponse HTTPS, certificat Let's Encrypt valide</span>
 $ curl -sI https://tban.planbadge.fr/        ->  HTTP/2 200   (cert TLS valide)
 <span class="c"># Route de santé : 200 + base de données joignable</span>
-$ curl -s  https://tban.planbadge.fr/health  ->  {"status":"ok","db":"up","uptime":504}
+$ curl -s  https://tban.planbadge.fr/health  ->  {"status":"ok","db":"up","uptime":...}
 <span class="c"># Leaderboard : la donnée métier est bien persistée en PostgreSQL</span>
 $ curl -s  https://tban.planbadge.fr/api/scores
-   ->  [{"name":"senio","score":96}, {"name":"ALEX","score":35}, ...]</pre>
-<span style="font-size:.8rem;color:var(--muted)">Vérifié en direct sur l'environnement déployé : HTTPS valide, base connectée, persistance des scores
-confirmée via l'API. La validation d'entrée (HTTP 400 sur score invalide) a aussi été testée.</span></div>
-<h3>Technologies utilisées</h3>
-<p>Node.js 20, Express, <code>pg</code> (client PostgreSQL), PostgreSQL 16, Docker / Docker Compose, Coolify
-(Traefik + Let's Encrypt), Uptime Kuma.</p>
-<h3>Principales difficultés rencontrées</h3>
-<table>
-  <tr><th style="width:38%">Difficulté</th><th>Solution retenue</th></tr>
-  <tr><td>La base met quelques secondes à démarrer ; l'app plantait au boot.</td>
-      <td>L'app <b>démarre quand même</b> (elle écoute tout de suite) et <b>retente</b> la connexion à la base
-      (15 tentatives). <code>/health</code> renvoie <code>503</code> tant que la base n'est pas prête, puis <code>200</code>.</td></tr>
-  <tr><td>Ordre de démarrage des conteneurs.</td>
-      <td><code>depends_on: condition: service_healthy</code> + <code>pg_isready</code> sur le service <code>db</code>.</td></tr>
-  <tr><td>Persistance de la donnée entre deux déploiements.</td>
-      <td>Volume nommé <code>db_data</code> monté sur <code>/var/lib/postgresql/data</code> (à ne jamais supprimer).</td></tr>
-  <tr><td><b>Erreur Traefik « 503 no available server »</b> au 1ᵉʳ déploiement : le domaine était routé vers le port 80 par défaut, alors que l'app écoute sur 3000.</td>
-      <td>Dans Coolify, le domaine doit <b>cibler le port interne du conteneur</b> : on l'a saisi sous la forme <code>https://tban.planbadge.fr:3000</code>. Résolution immédiate → app accessible + HTTPS Let's Encrypt émis.</td></tr>
-</table>
+   ->  [{"name":"senio","score":96}, {"name":"NYLE","score":90}, ...]</pre></div>
+  <figure><img src="img/coolify.png" alt="Déploiement Coolify — Running (healthy)">
+    <figcaption>Coolify — déploiement de <code>NYL3E/TBAN:main</code> terminé : conteneurs <b>db</b> et <b>app</b> démarrés,
+    statut <b>Running (healthy)</b>, avec le journal de déploiement complet.</figcaption></figure>
+  <h3>Principales difficultés rencontrées</h3>
+  <table>
+    <tr><th style="width:40%">Difficulté</th><th>Solution retenue</th></tr>
+    <tr><td><b>Traefik « 503 no available server »</b> au 1ᵉʳ déploiement : le domaine était routé vers le port 80 par défaut, alors que l'app écoute sur 3000.</td>
+        <td>Dans Coolify, le domaine doit <b>cibler le port interne du conteneur</b> : <code>https://tban.planbadge.fr:3000</code>. Résolution immédiate → app accessible + HTTPS émis.</td></tr>
+    <tr><td>La base met quelques secondes à démarrer ; l'app risquait de planter au boot.</td>
+        <td>L'app <b>démarre quand même</b> et <b>retente</b> la connexion ; <code>/health</code> renvoie <code>503</code> tant que la base n'est pas prête, puis <code>200</code>.</td></tr>
+    <tr><td>Persistance de la donnée entre déploiements.</td>
+        <td>Volume nommé <code>db_data</code> monté sur <code>/var/lib/postgresql/data</code> (à ne jamais supprimer).</td></tr>
+    <tr><td>Fusionner le travail de chacun (branches divergentes).</td>
+        <td>Résolution des <b>conflits Git</b> en combinant page d'accueil, décors dynamiques et gameplay.</td></tr>
+  </table>
+</section>
 
-<!-- ============================== 5. EXPLOITATION ============================== -->
-<h2>5. Exploitation</h2>
-<h3>5.1 Supervision (monitoring + alerting)</h3>
-<p><b>Idée clé.</b> <b>Monitoring</b> = savoir si le service fonctionne. <b>Alerting</b> = prévenir quelqu'un quand il
-ne fonctionne plus. Nous combinons deux niveaux :</p>
-<table>
-  <tr><th style="width:26%">Dispositif</th><th>Configuration</th><th>Ce qu'il vérifie</th></tr>
-  <tr><td>Healthcheck Coolify</td><td>Path <code>/health</code>, port <code>3000</code>, statut attendu <code>200</code>.</td>
-      <td>Interne : l'app <b>et</b> la base répondent (la route teste <code>SELECT 1</code>).</td></tr>
-  <tr><td>Uptime Kuma</td><td>Monitor HTTP(s) sur l'URL publique, intervalle 60 s, nom <code>tban-flappy</code>.</td>
-      <td>Externe : le service est réellement accessible « comme un utilisateur ».</td></tr>
-  <tr><td>Healthcheck Docker</td><td>Défini dans le <code>Dockerfile</code> et le compose.</td>
-      <td>Le conteneur se déclare lui-même sain / malsain auprès de Docker.</td></tr>
-</table>
-<p style="font-size:.9rem"><b>En cas d'incident :</b> Uptime Kuma passe au rouge et peut <b>notifier</b> (e-mail, Discord,
-Telegram…). En entreprise, l'alerte irait à la personne <b>d'astreinte</b> (ops / dev responsable du service).</p>
-<div class="shot">📷 Capture — Healthcheck Coolify <b>healthy</b> + monitor Uptime Kuma au <b>vert (Up)</b>.</div>
+<!-- ============================ 5. EXPLOITATION ============================ -->
+<section class="sec alt">
+  <h2>5. Exploitation</h2>
+  <h3>5.1 Supervision (monitoring + alerting)</h3>
+  <p><b>Monitoring</b> = savoir si le service fonctionne ; <b>Alerting</b> = prévenir quelqu'un quand il tombe. Trois niveaux :</p>
+  <table>
+    <tr><th style="width:24%">Dispositif</th><th>Configuration</th><th>Ce qu'il vérifie</th></tr>
+    <tr><td>Healthcheck Coolify</td><td>Path <code>/health</code>, port <code>3000</code>, statut <code>200</code>.</td><td>Interne : app <b>et</b> base répondent (<code>SELECT 1</code>).</td></tr>
+    <tr><td>Uptime Kuma</td><td>Monitor HTTP(s) sur l'URL publique, intervalle 60 s.</td><td>Externe : le service est réellement accessible « comme un utilisateur ».</td></tr>
+    <tr><td>Healthcheck Docker</td><td>Défini dans le <code>Dockerfile</code> et le compose.</td><td>Le conteneur se déclare sain/malsain à Docker.</td></tr>
+  </table>
+  <figure><img src="img/uptime-kuma.png" alt="Monitor Uptime Kuma tban-flappy En ligne">
+    <figcaption>Uptime Kuma — monitor <b>tban-flappy</b> « En ligne » : 49 ms, disponibilité 95,65 %, certificat valide 90 j.</figcaption></figure>
+  <p style="font-size:.88rem"><b>En cas d'incident :</b> Uptime Kuma passe au rouge et peut <b>notifier</b> (e-mail, Discord, Telegram…). En entreprise, l'alerte irait à la personne <b>d'astreinte</b>.</p>
 
-<h3>5.2 Logs</h3>
-<p><b>Où :</b> Coolify → application → onglet <b>Logs</b> (logs de build + logs du conteneur, sans SSH). Lignes types :</p>
+  <h3>5.2 Logs</h3>
+  <p><b>Où :</b> Coolify → application → onglet <b>Logs</b> (build + conteneur, sans SSH). Lignes types :</p>
 <pre>[server] Flappy TBAN à l'écoute sur le port 3000
 [db] Connecté à PostgreSQL — table "scores" prête.
-[api] Nouveau score enregistré : Lenny = 27
+[api] Nouveau score enregistré : NYLE = 90
 [health] Base de données injoignable : ...   <span class="c">(symptôme : la base est tombée)</span></pre>
-<p style="font-size:.9rem"><b>Utilité :</b> la 2ᵉ ligne confirme un démarrage réussi (app + base) ; la 3ᵉ trace l'activité
-métier (un score a été enregistré) ; la dernière apparaît si la base devient injoignable — c'est le 1ᵉʳ endroit où
-regarder pour diagnostiquer. Pour retrouver le problème d'un utilisateur, on lui demande l'<b>heure exacte</b>,
-l'<b>URL</b>, l'<b>action</b> et le <b>navigateur</b> afin de filtrer la bonne fenêtre de logs.</p>
+  <p style="font-size:.88rem"><b>Utilité :</b> confirmer un démarrage sain, tracer l'activité métier (un score enregistré), et diagnostiquer (la dernière ligne pointe une base injoignable). Pour retrouver le problème d'un utilisateur : <b>heure exacte</b>, <b>URL</b>, <b>action</b>, <b>navigateur</b>.</p>
 
-<h3>5.3 Stratégie de mise à jour</h3>
-<ul>
-  <li><b>Briques à maintenir :</b> image Node 20, PostgreSQL 16, Coolify/Traefik, l'OS hôte, et nos dépendances
-  (<code>express</code>, <code>pg</code>).</li>
-  <li><b>Process :</b> modification → commit GitHub → Coolify <b>redéploie automatiquement</b> ; possibilité de
-  <b>rollback</b> vers un déploiement précédent depuis Coolify.</li>
-  <li><b>Vérification post-MAJ :</b> Healthcheck toujours <code>healthy</code> + test manuel d'une partie + envoi
-  d'un score de test + surveillance des logs et d'Uptime Kuma.</li>
-  <li><b>Compromis :</b> ne jamais mettre à jour = failles non corrigées ; tout mettre à jour sans tester = risque de
-  régression. On sauvegarde <b>avant</b> toute mise à jour de la base.</li>
-</ul>
+  <h3>5.3 Stratégie de mise à jour</h3>
+  <ul>
+    <li><b>Briques à maintenir :</b> image Node 20, PostgreSQL 16, Coolify/Traefik, OS hôte, dépendances (<code>express</code>, <code>pg</code>).</li>
+    <li><b>Process :</b> commit GitHub → Coolify redéploie ; <b>rollback</b> possible vers un déploiement précédent.</li>
+    <li><b>Vérification post-MAJ :</b> Healthcheck <code>healthy</code> + test d'une partie + envoi d'un score + surveillance logs &amp; Uptime Kuma.</li>
+    <li><b>Compromis :</b> ne jamais mettre à jour = failles ; tout mettre à jour sans tester = régressions. On sauvegarde <b>avant</b> toute MAJ de la base.</li>
+  </ul>
+</section>
 
-<h3>5.4 Stratégie de sauvegarde (vue d'ensemble)</h3>
-<p>Le <b>code</b> est sauvegardé par Git (GitHub + clones locaux). La <b>base de données</b> est sauvegardée par
-<code>pg_dump</code> planifié. Détail et application de la règle 3-2-1 ci-dessous.</p>
-
-<!-- ============================== 6. SAUVEGARDES 3-2-1 ============================== -->
-<h2>6. Sauvegardes — que faut-il protéger ? (règle 3-2-1)</h2>
-<table>
-  <tr><th>Élément</th><th style="width:13%">Important ?</th><th style="width:15%">Sauvegardé ?</th><th>Commentaire</th></tr>
-  <tr><td><b>Base de données (scores)</b></td><td class="bad">Critique</td><td class="ok">Oui</td><td><b>La donnée la plus critique</b> : impossible à reconstruire. Dump <code>pg_dump</code> régulier + volume persistant.</td></tr>
-  <tr><td>Code source</td><td class="ok">Oui</td><td class="ok">Oui</td><td>GitHub (hors-site) + clones locaux des 4 membres.</td></tr>
-  <tr><td>Variables d'env / secrets</td><td class="ok">Oui</td><td>Partiel</td><td>Mot de passe PostgreSQL stocké dans Coolify ; à conserver dans un gestionnaire de secrets.</td></tr>
-  <tr><td>Configuration Coolify</td><td class="ok">Oui</td><td class="no">À documenter</td><td>Reproductible via le compose + le README, mais à exporter/noter.</td></tr>
-  <tr><td>Nom de domaine / DNS</td><td class="ok">Oui</td><td class="ok">Registrar</td><td>Géré hors serveur ; sa perte = URL indisponible.</td></tr>
-  <tr><td>Certificats HTTPS</td><td class="no">Faible</td><td class="ok">Auto</td><td>Régénérés automatiquement (Let's Encrypt).</td></tr>
-</table>
-<h3>Application de la règle 3-2-1 à la base de données</h3>
-<table>
-  <tr><th style="width:18%">Règle</th><th>Mise en œuvre</th></tr>
-  <tr><td><b>3 copies</b></td><td>(1) la base en production (volume <code>db_data</code>) · (2) un dump <code>pg_dump</code> local · (3) une copie de ce dump dans un stockage cloud.</td></tr>
-  <tr><td><b>2 supports</b></td><td>Le volume sur le serveur Coolify + un stockage objet / disque distinct pour les dumps.</td></tr>
-  <tr><td><b>1 hors site</b></td><td>Le dump copié dans un cloud (≠ serveur de prod) — résiste à la perte totale du VPS.</td></tr>
-</table>
-<div class="box"><span class="label">Commande de sauvegarde</span>
+<!-- ============================ 6. SAUVEGARDES ============================ -->
+<section class="sec">
+  <h2>6. Sauvegardes — règle 3-2-1</h2>
+  <table>
+    <tr><th>Élément</th><th style="width:13%">Important ?</th><th style="width:14%">Sauvegardé ?</th><th>Commentaire</th></tr>
+    <tr><td><b>Base de données (scores)</b></td><td class="bad">Critique</td><td class="ok">Oui</td><td><b>La donnée la plus critique</b>, impossible à reconstruire. Dump <code>pg_dump</code> + volume persistant.</td></tr>
+    <tr><td>Code source</td><td class="ok">Oui</td><td class="ok">Oui</td><td>GitHub (hors-site) + clones locaux des 4 membres.</td></tr>
+    <tr><td>Variables d'env / secrets</td><td class="ok">Oui</td><td>Partiel</td><td>Mot de passe PostgreSQL dans Coolify ; à conserver dans un gestionnaire de secrets.</td></tr>
+    <tr><td>Config Coolify</td><td class="ok">Oui</td><td class="no">À documenter</td><td>Reproductible via le compose + README, mais à exporter/noter.</td></tr>
+    <tr><td>Nom de domaine / DNS</td><td class="ok">Oui</td><td class="ok">Registrar</td><td>Géré hors serveur ; sa perte = URL indisponible.</td></tr>
+    <tr><td>Certificats HTTPS</td><td class="no">Faible</td><td class="ok">Auto</td><td>Régénérés automatiquement (Let's Encrypt).</td></tr>
+  </table>
+  <table>
+    <tr><th style="width:16%">Règle</th><th>Mise en œuvre pour notre base</th></tr>
+    <tr><td><b>3 copies</b></td><td>(1) la base en production (volume <code>db_data</code>) · (2) un dump <code>pg_dump</code> · (3) une copie du dump dans un stockage cloud.</td></tr>
+    <tr><td><b>2 supports</b></td><td>Le volume sur le serveur Coolify + un stockage objet / disque distinct pour les dumps.</td></tr>
+    <tr><td><b>1 hors site</b></td><td>Le dump copié dans un cloud (≠ serveur de prod) — résiste à la perte totale du VPS.</td></tr>
+  </table>
+  <div class="box"><span class="label">Commande de sauvegarde / restauration</span>
 <pre>$ docker compose exec db pg_dump -U flappy flappy > backup_$(date +%F).sql
 <span class="c"># Restauration :</span>
 $ cat backup_2026-06-18.sql | docker compose exec -T db psql -U flappy flappy</pre></div>
-<div class="box warn"><b>Phrase à retenir :</b> « Une sauvegarde non testée est une hypothèse. » Une restauration doit
-être <b>testée</b> au moins une fois pour être considérée comme fiable.</div>
+  <div class="box warn"><b>Phrase à retenir :</b> « Une sauvegarde non testée est une hypothèse. » Une restauration doit être <b>testée</b> au moins une fois pour être fiable.</div>
+</section>
 
-<!-- ============================== 7. SUPPORT UTILISATEUR ============================== -->
-<h2>7. Support utilisateur</h2>
-<p>Face à un utilisateur qui signale « votre application ne fonctionne pas », l'objectif n'est pas de répondre
-« ça marche chez moi » mais de <b>collecter les bonnes informations</b> pour retrouver la trace dans les logs.</p>
-<div class="box ok"><span class="label">Réponse type au ticket</span>
-<p style="margin:6px 0"><b>Objet :</b> Re : Problème d'accès à Flappy TBAN — quelques informations pour vous aider</p>
-<p style="margin:6px 0">Bonjour,<br>Merci pour votre signalement, nous allons vous aider rapidement. Pour identifier
-la cause, pourriez-vous nous préciser :</p>
-<ul>
-  <li>l'<b>URL exacte</b> utilisée ;</li>
-  <li>l'<b>heure approximative</b> du problème (et votre fuseau) ;</li>
-  <li>une <b>capture d'écran</b> de l'erreur ;</li>
-  <li>le <b>navigateur et l'appareil</b> (ex. Chrome sur Windows 11, Safari sur iPhone) ;</li>
-  <li>les <b>étapes réalisées</b> juste avant l'erreur (ex. « au moment d'enregistrer mon score ») ;</li>
-  <li>le <b>message d'erreur exact</b>, s'il y en a un.</li>
-</ul>
-<p style="margin:6px 0">Ces éléments nous permettront de retrouver la trace correspondante dans nos logs.<br>
-Merci d'avance,<br>L'équipe <b>TBAN</b></p></div>
-<p style="font-size:.85rem;color:var(--muted)"><b>Prise en main à distance</b> (si nécessaire et <b>avec l'accord</b> de
-l'utilisateur) : Assistance rapide / Partage d'écran macOS, RustDesk, AnyDesk ou TeamViewer.</p>
+<!-- ============================ 7. SUPPORT ============================ -->
+<section class="sec alt">
+  <h2>7. Support utilisateur</h2>
+  <p>Face à « votre application ne fonctionne pas », l'objectif n'est pas de répondre « ça marche chez moi » mais de
+  <b>collecter les bonnes informations</b> pour retrouver la trace dans les logs.</p>
+  <div class="box ok"><span class="label">Réponse type au ticket</span>
+  <p style="margin:4px 0"><b>Objet :</b> Re : Problème d'accès à Flappy TBAN</p>
+  <p style="margin:4px 0">Bonjour, merci pour votre signalement. Pour identifier la cause, pourriez-vous préciser :</p>
+  <ul style="margin:4px 0">
+    <li>l'<b>URL exacte</b> utilisée ;</li>
+    <li>l'<b>heure approximative</b> du problème (et votre fuseau) ;</li>
+    <li>une <b>capture d'écran</b> de l'erreur ;</li>
+    <li>le <b>navigateur et l'appareil</b> (ex. Chrome / Windows 11) ;</li>
+    <li>les <b>étapes</b> juste avant l'erreur (ex. « au moment d'enregistrer mon score ») ;</li>
+    <li>le <b>message d'erreur exact</b>, s'il y en a un.</li>
+  </ul>
+  <p style="margin:4px 0">Ces éléments nous permettront de retrouver la trace dans nos logs.<br>L'équipe <b>TBAN</b></p></div>
+  <p style="font-size:.85rem; color:var(--muted)"><b>Prise en main à distance</b> (avec accord de l'utilisateur) : Assistance rapide / Partage d'écran macOS, RustDesk, AnyDesk ou TeamViewer.</p>
+</section>
 
-<!-- ============================== 8. RETOUR D'EXPÉRIENCE ============================== -->
-<h2>8. Retour d'expérience</h2>
-<table>
-  <tr><th style="width:24%">Ce qui a bien fonctionné</th>
-      <td>Le <b>workflow Git en équipe</b> : chacun a développé sa fonctionnalité sur sa <b>branche</b> (page d'accueil, décors dynamiques)
-      puis l'a intégrée par <b>Pull Request</b> et merge. L'enchaînement <b>Git → Docker → Coolify</b> redéploie tout en un push,
-      et la route <code>/health</code> a rendu le monitoring concret et fiable.</td></tr>
-  <tr><th>Ce qui a été difficile</th>
-      <td>Le <b>routage Coolify</b> (indiquer le port du conteneur dans le domaine), le <b>timing app/DB</b> au démarrage,
-      la <b>persistance par volume</b>, et la <b>résolution des conflits Git</b> en fusionnant les branches de chacun.</td></tr>
-  <tr><th>Ce que nous améliorerions</th>
-      <td>Ajouter une <b>route <code>/metrics</code></b> et un vrai <b>dashboard métier</b> (cf. indicateurs ci-dessous),
-      anti-triche côté serveur sur les scores, sauvegardes <b>automatisées et planifiées</b> avec restauration testée,
-      et alerting Uptime Kuma branché sur un canal d'équipe.</td></tr>
-</table>
-<div class="box"><span class="label">Outil d'IA utilisé (assistance au développement)</span>
-Le produit n'embarque pas d'IA. En revanche, nous avons utilisé <b>Claude (Claude Code, modèle Anthropic Opus)</b>
-comme <b>assistant de développement</b> (génération de code, Dockerfile, documentation), tout le code ayant été relu
-et testé par le groupe.</div>
+<!-- ============================ 8. RETEX ============================ -->
+<section class="sec">
+  <h2>8. Retour d'expérience</h2>
+  <table>
+    <tr><th style="width:24%">Ce qui a bien fonctionné</th><td>Le <b>workflow Git en équipe</b> (branches de fonctionnalité + Pull Requests). L'enchaînement <b>Git → Docker → Coolify</b> redéploie tout en un push, et <code>/health</code> a rendu le monitoring concret et fiable.</td></tr>
+    <tr><th>Ce qui a été difficile</th><td>Le <b>routage Coolify</b> (port du conteneur dans le domaine), le <b>timing app/DB</b> au démarrage, la <b>persistance par volume</b>, et la <b>résolution des conflits Git</b> en fusionnant les branches.</td></tr>
+    <tr><th>Ce que nous améliorerions</th><td>Un vrai <b>dashboard métier</b> (KPIs), un <b>anti-triche serveur</b> sur les scores, des <b>sauvegardes planifiées</b> avec restauration testée, et l'alerting Uptime Kuma branché sur un canal d'équipe.</td></tr>
+  </table>
+  <div class="box"><span class="label">Outil d'IA utilisé (assistance au développement)</span>
+  Le produit n'embarque pas d'IA. Nous avons utilisé <b>Claude (Claude Code, modèle Anthropic Opus)</b> comme assistant de développement (génération de code, Dockerfile, documentation, débogage du déploiement) ; tout le code a été relu et testé par le groupe.</div>
+  <h3>Indicateurs métier proposés</h3>
+  <p>Calculables depuis la table <code>scores</code> : <b>parties enregistrées / jour</b> (<code>COUNT(*)</code>), <b>score moyen &amp; meilleur score</b> (<code>AVG</code>, <code>MAX</code>), <b>joueurs distincts</b> (<code>COUNT(DISTINCT name)</code>).</p>
+</section>
 
-<!-- ============================== 9. INDICATEURS MÉTIER ============================== -->
-<h2>9. Indicateurs métier (bonus exploitation)</h2>
-<p>Une application peut être techniquement en ligne (serveur OK, HTTPS OK) sans remplir son objectif. Trois KPIs utiles
-pour Flappy TBAN, tous calculables depuis la table <code>scores</code> :</p>
-<ol>
-  <li><b>Nombre de parties enregistrées / jour</b> — volume d'usage réel (<code>COUNT(*)</code> par jour).</li>
-  <li><b>Score moyen et meilleur score</b> — engagement et niveau des joueurs (<code>AVG</code>, <code>MAX</code>).</li>
-  <li><b>Nombre de joueurs distincts</b> — audience (<code>COUNT(DISTINCT name)</code>).</li>
-</ol>
+<!-- ============================ BARÈME ============================ -->
+<section class="sec alt">
+  <h2>Couverture des critères d'évaluation</h2>
+  <table>
+    <tr><th>Critère (barème)</th><th style="width:10%">Points</th><th>Où c'est traité</th></tr>
+    <tr><td>Dépôt GitHub</td><td>3</td><td>§2 — public, 18 commits, 6 contributeurs, branches + PR, mapping pseudo↔identité.</td></tr>
+    <tr><td>Dockerisation</td><td>4</td><td>§3–4 — Dockerfile + docker-compose multi-services, healthchecks, volume.</td></tr>
+    <tr><td>Déploiement Coolify</td><td>4</td><td>§4 — runbook, HTTPS valide, port 3000, URL publique.</td></tr>
+    <tr><td>Monitoring et exploitation</td><td>3</td><td>§5 — Healthcheck Coolify, Uptime Kuma (UP), logs, mises à jour.</td></tr>
+    <tr><td>Réflexion sur les sauvegardes</td><td>2</td><td>§6 — règle 3-2-1, <code>pg_dump</code>, restauration.</td></tr>
+    <tr><td>Qualité du rapport</td><td>4</td><td>Document complet, structuré, illustré de captures réelles.</td></tr>
+    <tr><th>Total</th><th>20</th><th></th></tr>
+  </table>
+</section>
 
-<!-- ============================== COUVERTURE DU BARÈME ============================== -->
-<h2>Couverture des critères d'évaluation</h2>
-<table>
-  <tr><th>Critère (barème)</th><th style="width:10%">Points</th><th>Où c'est traité</th></tr>
-  <tr><td>Dépôt GitHub</td><td>3</td><td>§2 — public, 4 contributeurs, commits à sens métier, mapping pseudo↔identité.</td></tr>
-  <tr><td>Dockerisation</td><td>4</td><td>§3–4 — Dockerfile + docker-compose multi-services, healthchecks, volume.</td></tr>
-  <tr><td>Déploiement Coolify</td><td>4</td><td>§4 — runbook, HTTPS, port 3000, URL publique.</td></tr>
-  <tr><td>Monitoring et exploitation</td><td>3</td><td>§5 — Healthcheck Coolify, Uptime Kuma, logs, mises à jour.</td></tr>
-  <tr><td>Réflexion sur les sauvegardes</td><td>2</td><td>§6 — règle 3-2-1, <code>pg_dump</code>, restauration.</td></tr>
-  <tr><td>Qualité du rapport</td><td>4</td><td>Document complet, structuré, illustré.</td></tr>
-  <tr><th>Total</th><th>20</th><th></th></tr>
-</table>
-
-<div class="footer">Rapport — Projet final « Déployer et exploiter une application web » · Application <b>Flappy TBAN</b> ·
-Groupe TBAN (Lenny TRIDAT, Alexis BRUN, Raphaël ASSY, Seno NGUYEN) ·
-Document conçu pour export PDF (Fichier → Imprimer → Enregistrer en PDF).
-Il reste à <b>insérer les captures d'écran</b> (Coolify <i>healthy</i>, Uptime Kuma au vert, logs, jeu en ligne) aux emplacements prévus.</div>
+<div class="foot">
+  Rapport — Projet final « Déployer et exploiter une application web » · Application <b>Flappy TBAN</b> ·
+  Groupe TBAN : Lenny TRIDAT, Alexis BRUN, Raphaël ASSY, Seno NGUYEN ·
+  Dépôt github.com/NYL3E/TBAN · En ligne : https://tban.planbadge.fr
+</div>
 
 </div>
 </body>
