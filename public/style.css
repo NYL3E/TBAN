@@ -257,3 +257,67 @@ canvas {
   from { box-shadow: 0 0 6px 2px rgba(168,85,247,.5); }
   to   { box-shadow: 0 0 18px 6px rgba(168,85,247,.85); }
 }
+
+/* --- Shreks décoratifs --- */
+.shrek {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  z-index: 0;
+  animation: shrek-bob 3s ease-in-out infinite;
+}
+.shrek-left  { left: 16px; animation-delay: 0s; }
+.shrek-right { right: 16px; animation-delay: 1.5s; }
+
+.shrek-face {
+  width: 80px;
+  height: 90px;
+  background: #7ab648;
+  border-radius: 40% 40% 45% 45%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.25);
+  position: relative;
+}
+.shrek-ears {
+  position: absolute;
+  top: -10px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 6px;
+}
+.shrek-ears span {
+  display: block;
+  width: 18px; height: 24px;
+  background: #7ab648;
+  border-radius: 50% 50% 0 0;
+  border: 2px solid #5a8f30;
+}
+.shrek-eyes  { display: flex; gap: 8px; font-size: 18px; line-height: 1; }
+.shrek-nose  { font-size: 14px; margin: -2px 0; }
+.shrek-mouth { font-size: 18px; line-height: 1; }
+
+.shrek-label {
+  font-weight: 900;
+  font-size: .75rem;
+  letter-spacing: .1em;
+  color: #5a8f30;
+  text-shadow: 0 1px 0 rgba(255,255,255,.5);
+}
+
+@keyframes shrek-bob {
+  0%, 100% { transform: translateY(-50%); }
+  50%       { transform: translateY(calc(-50% - 10px)); }
+}
+
+/* Masquer Shrek sur petits écrans (pas assez de place) */
+@media (max-width: 1100px) { .shrek { display: none; } }
