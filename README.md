@@ -40,6 +40,7 @@ Docker
 | `GET`   | `/health`      | Healthcheck (200 si app + DB OK, 503 sinon)     |
 | `GET`   | `/api/scores`  | Renvoie les 10 meilleurs scores (JSON)          |
 | `POST`  | `/api/scores`  | Enregistre un score `{ "name": "...", "score": 42 }` |
+| `DELETE`| `/api/scores`  | Réinitialise le classement (vide la table `scores`) |
 
 ---
 
