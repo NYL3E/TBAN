@@ -28,7 +28,7 @@
   const gapFor = (s) => Math.max(MIN_GAP, BASE_GAP - s * 1.6);
 
   // --- État ------------------------------------------------------------------
-  let state = 'ready';        // "ready" | "playing" | "dead"
+  let state = 'menu';         // "menu" | "ready" | "playing" | "dead"
   let bird = { y: H / 2, v: 0 };
   let pipes = [];
   let score = 0;
@@ -263,6 +263,32 @@
   const scoresEl = document.getElementById('scores');
   const refreshBtn = document.getElementById('refresh');
 
+  // --- Navigation Menu <-> Jeu ----------------------------------------------
+  const menuEl = document.getElementById('menu');
+  const gameScreenEl = document.getElementById('game-screen');
+  const playBtn = document.getElementById('play-btn');
+  const backMenuBtn = document.getElementById('back-menu');
+  const toMenuBtn = document.getElementById('to-menu');
+
+  // Affiche la landing/menu : on rafraîchit le classement à chaque retour.
+  function showMenu() {
+    state = 'menu';
+    gameScreenEl.classList.add('hidden');
+    gameoverEl.classList.add('hidden');
+    menuEl.classList.remove('hidden');
+    loadScores();
+  }
+
+  // Lance l'écran de jeu (état "ready" : on tape pour démarrer).
+  function showGame() {
+    if (!pseudo) { showEditing(); return; }   // pseudo obligatoire avant de jouer
+    menuEl.classList.add('hidden');
+    gameScreenEl.classList.remove('hidden');
+    gameoverEl.classList.add('hidden');
+    bird = { y: H / 2, v: 0 };
+    state = 'ready';
+  }
+
   function showGameOver(s) {
     finalScoreEl.textContent = s;
     saveStatus.textContent = 'Enregistrement…';
@@ -331,8 +357,11 @@
   });
   replayBtn.addEventListener('click', () => reset());
   refreshBtn.addEventListener('click', () => loadScores());
+  playBtn.addEventListener('click', () => showGame());
+  backMenuBtn.addEventListener('click', () => showMenu());
+  toMenuBtn.addEventListener('click', () => showMenu());
 
   // --- Démarrage -------------------------------------------------------------
-  loadScores();
+  showMenu();
   requestAnimationFrame(loop);
 })();
