@@ -5,9 +5,12 @@ Projet final du module **« Déployer et exploiter une application web »**
 
 Groupe **TBAN** : **Lenny TRIDAT**, **Alexis BRUN**, **Raphaël ASSY**, **Seno NGUYEN**.
 
-Un mini-jeu **Flappy Bird** (HTML5 canvas) doublé d'un **leaderboard persistant** :
-chaque joueur peut enregistrer son score, qui est stocké dans **PostgreSQL** et
-affiché dans un classement « Top 10 ». Ce sont ces scores qui constituent la
+🌐 **En ligne :** https://tban.planbadge.fr
+
+Un mini-jeu **Flappy Bird** (HTML5 canvas) doublé d'un **leaderboard persistant**.
+On choisit son **pseudo une seule fois** (en haut à droite, mémorisé), la **difficulté
+augmente progressivement** avec le score, et chaque partie **enregistre automatiquement**
+le score dans **PostgreSQL** (classement « Top 10 »). Ces scores constituent la
 **donnée métier** persistée par l'application.
 
 ---
@@ -122,6 +125,15 @@ Consultables dans **Coolify → application → onglet Logs**. Exemples de ligne
 
   À conserver sur 2 supports différents + 1 copie hors-site (voir le rapport).
 
+### Réinitialiser le classement
+
+Pour repartir d'un leaderboard propre (ex. après une phase de test), vider la table
+depuis un terminal sur le conteneur **db** (Coolify → service `db` → Terminal) :
+
+```bash
+psql -U flappy -d flappy -c "TRUNCATE TABLE scores RESTART IDENTITY;"
+```
+
 ---
 
 ## 📁 Structure
@@ -143,9 +155,9 @@ flappy-tban/
 
 ## 🤝 Contributeurs
 
-| Identité étudiant | Pseudo GitHub        |
-|-------------------|----------------------|
-| Lenny TRIDAT      | _à compléter_        |
-| Alexis BRUN       | _à compléter_        |
-| Raphaël ASSY      | _à compléter_        |
-| Seno NGUYEN       | _à compléter_        |
+| Identité étudiant | Compte / auteur des commits        |
+|-------------------|------------------------------------|
+| Lenny TRIDAT      | **NYL3E** (propriétaire du dépôt)  |
+| Alexis BRUN       | commits au nom « Alexis BRUN »     |
+| Raphaël ASSY      | commits au nom « Raphael ASSY »    |
+| Seno NGUYEN       | commits au nom « Seno NGUYEN »     |
