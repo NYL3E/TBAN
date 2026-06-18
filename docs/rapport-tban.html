@@ -96,11 +96,13 @@ Coolify → exploitation (monitoring, logs, mises à jour, sauvegardes, support)
   <tr><th>Fonctionnalités principales</th>
       <td>
         <ul>
+          <li><b>Écran d'accueil (menu)</b> : pseudo, bouton « Jouer », classement et règles avant de lancer la partie.</li>
           <li>Jeu Flappy Bird complet : gravité, tuyaux, collisions, score en temps réel.</li>
           <li><b>Difficulté progressive</b> : la vitesse augmente et l'ouverture se resserre doucement avec le score (effet borné, non punitif).</li>
-          <li><b>Pseudo défini une seule fois</b> (en haut à droite, mémorisé via <code>localStorage</code>) → identité de joueur stable.</li>
+          <li><b>Décors dynamiques</b> : l'ambiance change par paliers de score (jour, coucher de soleil, nuit étoilée…) avec un effet « niveau ».</li>
+          <li><b>Pseudo défini une seule fois</b> (mémorisé via <code>localStorage</code>) → identité de joueur stable.</li>
           <li><b>Sauvegarde automatique</b> du score en fin de partie (API REST → PostgreSQL), sans action manuelle.</li>
-          <li><b>Leaderboard « Top 10 »</b> alimenté en direct depuis la base.</li>
+          <li><b>Leaderboard « Top 10 »</b> en direct, avec une action de <b>réinitialisation</b> du classement.</li>
           <li>Route de santé <code>/health</code> pour la supervision.</li>
         </ul>
       </td></tr>
@@ -123,10 +125,10 @@ Coolify → exploitation (monitoring, logs, mises à jour, sauvegardes, support)
 <h3>Correspondance pseudo GitHub ↔ étudiant</h3>
 <table>
   <tr><th>Étudiant</th><th>Pseudo GitHub</th><th>Exemples de contributions</th></tr>
-  <tr><td>Lenny TRIDAT</td><td><b>NYL3E</b> (propriétaire du dépôt)</td><td>Backend Express &amp; API <code>/api/scores</code>, intégration PostgreSQL.</td></tr>
-  <tr><td>Alexis BRUN</td><td>commits au nom « Alexis BRUN »</td><td>Moteur du jeu (canvas), physique, collisions, difficulté progressive.</td></tr>
-  <tr><td>Raphaël ASSY</td><td>commits au nom « Raphael ASSY »</td><td>Dockerfile, docker-compose, déploiement &amp; routage Coolify.</td></tr>
-  <tr><td>Seno NGUYEN</td><td>commits au nom « Seno NGUYEN »</td><td>UI / leaderboard, pseudo &amp; sauvegarde auto, rapport.</td></tr>
+  <tr><td>Lenny TRIDAT</td><td><b>NYL3E</b> &amp; <b>nylegoat</b> (propriétaire du dépôt)</td><td>Backend Express &amp; API <code>/api/scores</code>, intégration PostgreSQL.</td></tr>
+  <tr><td>Alexis BRUN</td><td><b>Vexta-AI</b></td><td>Moteur du jeu (canvas), physique/collisions, difficulté, <b>écran d'accueil (menu)</b>.</td></tr>
+  <tr><td>Raphaël ASSY</td><td><b>tygh7</b></td><td>Docker, déploiement &amp; routage Coolify, <b>décors dynamiques + reset du classement</b>.</td></tr>
+  <tr><td>Seno NGUYEN</td><td><b>senonguyen</b></td><td>UI / leaderboard, pseudo &amp; sauvegarde auto, rapport.</td></tr>
 </table>
 <div class="box"><span class="label">Convention de commits (messages à sens métier)</span>
 <pre>feat(game): boucle de jeu et collisions des tuyaux
@@ -154,7 +156,7 @@ participation des quatre membres.</div>
    Docker
    ├─ Conteneur « app »  : Node.js 20 + Express
    │      • sert le jeu (HTML/CSS/JS canvas)
-   │      • API REST : /health, GET /api/scores, POST /api/scores
+   │      • API REST : /health · GET/POST/DELETE /api/scores
    │      • port interne 3000
    │
    └─ Conteneur « db »   : PostgreSQL 16
@@ -303,11 +305,12 @@ l'utilisateur) : Assistance rapide / Partage d'écran macOS, RustDesk, AnyDesk o
 <h2>8. Retour d'expérience</h2>
 <table>
   <tr><th style="width:24%">Ce qui a bien fonctionné</th>
-      <td>L'enchaînement <b>Git → Docker → Coolify</b> : un simple push redéploie tout. Le jeu, sans dépendance
-      front, est léger et rapide. La route <code>/health</code> a rendu le monitoring concret et fiable.</td></tr>
+      <td>Le <b>workflow Git en équipe</b> : chacun a développé sa fonctionnalité sur sa <b>branche</b> (page d'accueil, décors dynamiques)
+      puis l'a intégrée par <b>Pull Request</b> et merge. L'enchaînement <b>Git → Docker → Coolify</b> redéploie tout en un push,
+      et la route <code>/health</code> a rendu le monitoring concret et fiable.</td></tr>
   <tr><th>Ce qui a été difficile</th>
-      <td>Gérer le <b>démarrage de la base</b> (timing app/DB), comprendre la <b>persistance par volume</b> sous
-      Coolify, et exposer le <b>bon port</b> derrière le reverse-proxy.</td></tr>
+      <td>Le <b>routage Coolify</b> (indiquer le port du conteneur dans le domaine), le <b>timing app/DB</b> au démarrage,
+      la <b>persistance par volume</b>, et la <b>résolution des conflits Git</b> en fusionnant les branches de chacun.</td></tr>
   <tr><th>Ce que nous améliorerions</th>
       <td>Ajouter une <b>route <code>/metrics</code></b> et un vrai <b>dashboard métier</b> (cf. indicateurs ci-dessous),
       anti-triche côté serveur sur les scores, sauvegardes <b>automatisées et planifiées</b> avec restauration testée,
